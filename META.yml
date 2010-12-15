@@ -21,9 +21,12 @@ no_index:
   directory:
     - examples
     - inc
+    - share
     - t
     - xt
 requires:
+  File::ShareDir: 1.02
+  File::Spec: 0.80
   OpenGL: 0.64
   SDL: 2.524
   perl: 5.8.5
@@ -31,4 +34,4 @@ resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/SDL-Tutorial-3DWorld
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/SDL-Tutorial-3DWorld
-version: 0.03
+version: 0.04
