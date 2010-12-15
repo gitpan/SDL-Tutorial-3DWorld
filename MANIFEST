@@ -33,9 +33,9 @@ MANIFEST			This list of files
 META.yml
 README
 script/3dworld
+share/chessboard.jpg
 share/skybox/east.jpg
 share/skybox/north.jpg
-share/skybox/skyo33.rwx
 share/skybox/south.jpg
 share/skybox/up.jpg
 share/skybox/west.jpg

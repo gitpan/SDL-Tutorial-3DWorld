@@ -36,11 +36,11 @@ the movement of the camera (making them appear to be a long way away).
 
 use strict;
 use warnings;
-use File::Spec ();
-use OpenGL;
+use File::Spec                      ();
 use SDL::Tutorial::3DWorld::Texture ();
+use OpenGL;
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 =pod
 
@@ -143,22 +143,77 @@ sub init {
 }
 
 sub display {
-	my $self = shift;
+	my $self   = shift;
+	my $camera = shift;
+
+	# To make the skybox special effect work, we move the cube so that
+	# it is always centred around the camera.
+	glPushMatrix();
+	glTranslatef( $camera->X, $camera->Y, $camera->Z );
+
+	# Lighting does not apply to the skybox
 	glDisable( GL_LIGHTING );
 
-	# Activate the north face texture
+	# Draw the north face
 	$self->{north}->display;
-
-	# Draw the north face with the texture
-	glColor3d( 1, 1, 1 );
 	glBegin( GL_QUADS );
-	glTexCoord2f( 0.0, 0.0 ); glVertex3f( -1.0,  1.0, 1 ); # Bottom Left
-	glTexCoord2f( 1.0, 0.0 ); glVertex3f(  1.0,  1.0, 1 ); # Bottom Right
-	glTexCoord2f( 1.0, 1.0 ); glVertex3f(  1.0, -1.0, 1 ); # Top Right
-	glTexCoord2f( 0.0, 1.0 ); glVertex3f( -1.0, -1.0, 1 ); # Top Left
+	glTexCoord2f( 0, 0 ); glVertex3f( -500,  500,  500 ); # Top Left
+	glTexCoord2f( 1, 0 ); glVertex3f(  500,  500,  500 ); # Top Right
+	glTexCoord2f( 1, 1 ); glVertex3f(  500, -500,  500 ); # Bottom Right
+	glTexCoord2f( 0, 1 ); glVertex3f( -500, -500,  500 ); # Bottom Left
 	glEnd();
 
+	# Draw the south face 
+	$self->{south}->display;
+	glBegin( GL_QUADS );
+	glTexCoord2f( 0, 0 ); glVertex3f(  500,  500, -500 ); # Top Left
+	glTexCoord2f( 1, 0 ); glVertex3f( -500,  500, -500 ); # Top Right
+	glTexCoord2f( 1, 1 ); glVertex3f( -500, -500, -500 ); # Bottom Right
+	glTexCoord2f( 0, 1 ); glVertex3f(  500, -500, -500 ); # Bottom Left
+	glEnd();
+
+	# Draw the east face
+	$self->{east}->display;
+	glBegin( GL_QUADS );
+	glTexCoord2f( 0, 0 ); glVertex3f(  500,  500,  500 ); # Top Left
+	glTexCoord2f( 1, 0 ); glVertex3f(  500,  500, -500 ); # Top Right
+	glTexCoord2f( 1, 1 ); glVertex3f(  500, -500, -500 ); # Bottom Right
+	glTexCoord2f( 0, 1 ); glVertex3f(  500, -500,  500 ); # Bottom Left
+	glEnd();
+
+	# Draw the west face
+	$self->{west}->display;
+	glBegin( GL_QUADS );
+	glTexCoord2f( 0, 0 ); glVertex3f( -500,  500, -500 ); # Top Left
+	glTexCoord2f( 1, 0 ); glVertex3f( -500,  500,  500 ); # Top Right
+	glTexCoord2f( 1, 1 ); glVertex3f( -500, -500,  500 ); # Bottom Right
+	glTexCoord2f( 0, 1 ); glVertex3f( -500, -500, -500 ); # Bottom Left
+	glEnd();
+
+	# Draw the ceiling face
+	$self->{up}->display;
+	glBegin( GL_QUADS );
+	glTexCoord2f( 0, 0 ); glVertex3f( -500,  500, -500 ); # Top Left
+	glTexCoord2f( 1, 0 ); glVertex3f(  500,  500, -500 ); # Top Right
+	glTexCoord2f( 1, 1 ); glVertex3f(  500,  500,  500 ); # Bottom Right
+	glTexCoord2f( 0, 1 ); glVertex3f( -500,  500,  500 ); # Bottom Left
+	glEnd();
+
+	# Draw the optional floor
+	if ( $self->{down} ) {
+		$self->{down}->display;
+		glBegin( GL_QUADS );
+		glTexCoord2f( 0, 0 ); glVertex3f( -500, -500,  500 ); # Top Left
+		glTexCoord2f( 1, 0 ); glVertex3f(  500, -500,  500 ); # Top Right
+		glTexCoord2f( 1, 1 ); glVertex3f(  500, -500, -500 ); # Bottom Right
+		glTexCoord2f( 0, 1 ); glVertex3f( -500, -500, -500 ); # Bottom Left
+		glEnd();
+	}
+
+	# Clean up
 	glEnable( GL_LIGHTING );
+	glPopMatrix();
+
 	return 1;
 }
 

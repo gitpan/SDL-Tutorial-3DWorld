@@ -61,7 +61,7 @@ use SDL::Tutorial::3DWorld::Skybox    ();
 use SDL::Tutorial::3DWorld::Texture   ();
 use SDL::Tutorial::3DWorld::Landscape ();
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 =pod
 
@@ -99,25 +99,28 @@ sub new {
 			X => 0,
 			Y => 0.5,
 			Z => 0,
+			velocity => [ 0, 0, 0.001 ],
 		),
 		SDL::Tutorial::3DWorld::Actor->new(
 			X => 0,
 			Y => 1,
 			Z => 0,
+			velocity => [ 0.001, 0, 0 ],
 		),
 		SDL::Tutorial::3DWorld::Actor->new(
 			X => 0,
 			Y => 1.5,
 			Z => 0,
+			velocity => [ 0, 0.001, 0 ],
 		),
 	];
 
 	# Light the world with a single overhead light
 	$self->{lights} = [
 		SDL::Tutorial::3DWorld::Light->new(
-			X => 1,
-			Y => 10,
-			Z => 2,
+			X => 100,
+			Y => 100,
+			Z => 100,
 		),
 	];
 
@@ -147,10 +150,6 @@ sub run {
 
 	# Initialise the game
 	$self->init;
-
-	# Do an initial render pass
-	#$self->display;
-	#$self->sync;
 
 	# Render handler
 	$self->{sdl}->add_show_handler( sub {
@@ -203,7 +202,9 @@ sub init {
 	$self->{camera}->init( $self->{width}, $self->{height} );
 
 	# Initialise and load the skybox
-	$self->{skybox}->init;
+	if ( $self->{skybox} ) {
+		$self->{skybox}->init;
+	}
 
 	# Initialise the landscape so there is a world
 	$self->{landscape}->init;
@@ -233,8 +234,11 @@ sub display {
 	# NOTE: For now just translate back so we can see the render.
 	$self->{camera}->display;
 
-	# Draw the skybox
-	$self->{skybox}->display;
+	# Draw the skybox.
+	# It needs to know where the camera is to do it's special effect
+	if ( $self->{skybox} ) {
+		$self->{skybox}->display( $self->{camera} );
+	}
 
 	# Draw the landscape
 	$self->{landscape}->display;

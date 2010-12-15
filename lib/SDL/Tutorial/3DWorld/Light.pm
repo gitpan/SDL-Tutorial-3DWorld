@@ -39,7 +39,7 @@ use strict;
 use warnings;
 use OpenGL;
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 =pod
 
@@ -68,7 +68,7 @@ sub new {
 		delete($self->{X}) || 0,
 		delete($self->{Y}) || 0,
 		delete($self->{Z}) || 0,
-		0, # Unused
+		1, # Unused
 	];
 	$self->{ambient}  = [ 0.15, 0.15, 0.15, 0.15 ];
 	$self->{diffuse}  = [ 1.00, 1.00, 1.00, 1.00 ];
