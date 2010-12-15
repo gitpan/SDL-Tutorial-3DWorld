@@ -57,7 +57,7 @@ use SDL::Tutorial::3DWorld::Actor     ();
 use SDL::Tutorial::3DWorld::Camera    ();
 use SDL::Tutorial::3DWorld::Landscape ();
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =pod
 
@@ -177,6 +177,9 @@ sub init {
 	# Enable the Z buffer (DEPTH BUFFER) so that OpenGL will do all the
 	# correct shape culling for us and we don't have to care about it.
 	glEnable( GL_DEPTH_TEST );
+
+	# Try hard to make the perspective not suck
+	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
 	# Enable GLUT support
 	OpenGL::glutInit();

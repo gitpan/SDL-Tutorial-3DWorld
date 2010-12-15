@@ -32,11 +32,12 @@ In this initial skeleton code, the camera is fixed and cannot be moved.
 use strict;
 use warnings;
 use OpenGL;
+use SDL::Mouse;
 use SDL::Constants ();
 
 use constant D2R => CORE::atan2(1,1) / 40;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =pod
 
@@ -66,6 +67,12 @@ sub new {
 	$self->{Z}         ||= 0;
 	$self->{angle}     ||= 0;
 	$self->{elevation} ||= 0;
+
+	# Counter to ignore mouse motion events in situations where we know
+	# that the first event following some particular event will be bad.
+	# Supports ignore more than one motion event to support situations
+	# where multiple spurious mouse events are generated.
+	$self->{ignore_mouse_motion} = 0;
 
 	# Key tracking
 	$self->{down} = {
@@ -171,9 +178,11 @@ sub elevation {
 
 # Note that this doesn't position the camera, just sets it up
 sub init {
-	my $self   = shift;
-	my $width  = shift;
-	my $height = shift;
+	my $self = shift;
+
+	# Save the width and height for later
+	$self->{width}  = shift;
+	$self->{height} = shift;
 
 	# Select and reset the projection, flushing any old state
 	glMatrixMode( GL_PROJECTION );
@@ -182,7 +191,21 @@ sub init {
 	# Set the perspective we will look through.
 	# We'll use a standard 60 degree perspective, removing any
 	# shapes closer than one metre or further than one kilometre.
-	gluPerspective( 45.0, $width / $height, 0.1, 1000 );
+	gluPerspective( 45.0, $self->{width} / $self->{height}, 0.1, 1000 );
+
+	# The first event mouse motion event will result in a movement
+	# value equal to the position of the mouse, ignore it.
+	$self->{ignore_mouse_motion}++;
+
+	# As a mouselook game, we don't want users to see the cursor.
+	# We also position the cursor at the exact centre of the window.
+	# (This will result in another spurious mouse event)
+	SDL::Mouse::show_cursor( SDL::Constants::SDL_DISABLE );
+	SDL::Mouse::warp_mouse(
+		int( $self->{width}  / 2 ),
+		int( $self->{height} / 2 ),
+	);
+	$self->{ignore_mouse_motion}++;
 
 	return 1;
 }
@@ -225,6 +248,10 @@ sub event {
 	my $type  = $event->type;
 
 	if ( $type == SDL::Constants::SDL_MOUSEMOTION ) {
+		if ( $self->{ignore_mouse_motion} ) {
+			$self->{ignore_mouse_motion}--;
+			return 1;
+		}
 		my $x = $event->motion_xrel;
 		my $y = $event->motion_yrel;
 		$x = $x - 65536 if $x > 32000;
@@ -233,6 +260,15 @@ sub event {
 		$self->{elevation} += $y / 10;
 		$self->{elevation} =  90 if $self->{elevation} >  90;
 		$self->{elevation} = -90 if $self->{elevation} < -90;
+
+		# Move the mouse back to the centre of the window so that
+		# it can never escape the game window.
+		SDL::Mouse::warp_mouse(
+			int( $self->{width}  / 2 ),
+			int( $self->{height} / 2 ),
+		);
+		$self->{ignore_mouse_motion}++;
+
 		return 1;
 	}
 

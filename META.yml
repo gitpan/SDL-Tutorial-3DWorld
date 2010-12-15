@@ -4,8 +4,9 @@ author:
   - 'Adam Kennedy <adamk@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
-  Test::More: 0.80
-  Test::Script: 0
+  Test::More: 0.82
+  Test::NoWarnings: 1.00
+  Test::Script: 1.05
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
@@ -30,4 +31,4 @@ resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/SDL-Tutorial-3DWorld
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/SDL-Tutorial-3DWorld
-version: 0.02
+version: 0.03
