@@ -61,7 +61,7 @@ use SDL::Tutorial::3DWorld::Skybox    ();
 use SDL::Tutorial::3DWorld::Texture   ();
 use SDL::Tutorial::3DWorld::Landscape ();
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =pod
 
@@ -77,8 +77,8 @@ It does not current take any parameters.
 sub new {
 	my $class = shift;
 	my $self  = bless {
-		width  => 800,
-		height => 600,
+		width  => 1024,
+		height => 768,
 		dt     => 0.1,
 	}, $class;
 
@@ -199,18 +199,19 @@ sub init {
 
 	# Create the SDL application object
 	$self->{sdl} = SDLx::App->new(
-		title       => '3D World',
-		width       => $self->{width},
-		height      => $self->{height},
-		depth       => 24,
-		gl          => 1,
-		fullscreen  => 1,
+		title         => '3D World',
+		width         => $self->{width},
+		height        => $self->{height},
+		gl            => 1,
+		fullscreen    => 1,
+		depth         => 24, # Prevent harsh colour stepping
+		double_buffer => 1,  # Reduce flicker during rapid mouselook
 	);
 
 	# Enable the Z buffer (DEPTH BUFFER) so that OpenGL will do all the
 	# correct shape culling for us and we don't have to care about it.
-	glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_LESS );
+	glEnable( GL_DEPTH_TEST );
 
 	# Use the prettiest shading available to us
 	glShadeModel( GL_SMOOTH );
