@@ -1,5 +1,6 @@
 NAME
-    SDL::Tutorial::3DWorld - Demonstrates a very basic 3D engine
+    SDL::Tutorial::3DWorld - Create a good looking 3D world from scratch
+    with SDL
 
 DESCRIPTION
     This tutorial is intended to demonstrate the creation of a trivial but

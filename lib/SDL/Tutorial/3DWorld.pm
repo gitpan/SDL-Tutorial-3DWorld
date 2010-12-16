@@ -4,7 +4,7 @@ package SDL::Tutorial::3DWorld;
 
 =head1 NAME
 
-SDL::Tutorial::3DWorld - Demonstrates a very basic 3D engine
+SDL::Tutorial::3DWorld - Create a good looking 3D world from scratch with SDL
 
 =head1 DESCRIPTION
 
@@ -61,7 +61,7 @@ use SDL::Tutorial::3DWorld::Skybox    ();
 use SDL::Tutorial::3DWorld::Texture   ();
 use SDL::Tutorial::3DWorld::Landscape ();
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =pod
 
@@ -202,6 +202,7 @@ sub init {
 		title       => '3D World',
 		width       => $self->{width},
 		height      => $self->{height},
+		depth       => 24,
 		gl          => 1,
 		fullscreen  => 1,
 	);
