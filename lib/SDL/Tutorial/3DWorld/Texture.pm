@@ -45,7 +45,7 @@ use SDL::Video ();
 # Ensure all the OpenGL "constants" are loaded
 use SDL::Tutorial::3DWorld ();
 
-our $VERSION = '0.07';
+our $VERSION = '0.09';
 
 =pod
 
@@ -112,6 +112,9 @@ sub init {
 	# Use SDL to load the image
 	my $image = SDL::Image::load( $self->file );
 
+	# Check if the image actually got loaded
+	Carp::croak( 'Cannot load image at '.$self->file. ": ".SDL::get_error) unless $image;
+
 	# Tell SDL to leave the memory the image is in exactly where
 	# it is, so that OpenGL can bind to it directly.
 	SDL::Video::lock_surface($image);
@@ -154,7 +157,7 @@ sub init {
 	OpenGL::glTexParameterf(
 		OpenGL::GL_TEXTURE_2D,
 		OpenGL::GL_TEXTURE_MIN_FILTER,
-		OpenGL::GL_LINEAR, # OpenGL::GL_NEAREST,
+		OpenGL::GL_NEAREST_MIPMAP_LINEAR, # OpenGL::GL_NEAREST,
 	);
 
 	# Specify the zoom method to use when we are too close to the
