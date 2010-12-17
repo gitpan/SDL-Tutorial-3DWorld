@@ -12,6 +12,8 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/SDL/Tutorial/3DWorld.pm
 lib/SDL/Tutorial/3DWorld/Actor.pm
+lib/SDL/Tutorial/3DWorld/Actor/GridCube.pm
+lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
 lib/SDL/Tutorial/3DWorld/Landscape.pm
 lib/SDL/Tutorial/3DWorld/Light.pm
