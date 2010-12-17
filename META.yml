@@ -1,5 +1,5 @@
 ---
-abstract: 'Create a good looking 3D world from scratch with SDL'
+abstract: 'Create a 3D world from scratch with SDL and OpenGL'
 author:
   - 'Adam Kennedy <adamk@cpan.org>'
 build_requires:
@@ -33,4 +33,4 @@ resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/SDL-Tutorial-3DWorld
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/SDL-Tutorial-3DWorld
-version: 0.14
+version: 0.15

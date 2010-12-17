@@ -1,6 +1,6 @@
 NAME
-    SDL::Tutorial::3DWorld - Create a good looking 3D world from scratch
-    with SDL
+    SDL::Tutorial::3DWorld - Create a 3D world from scratch with SDL and
+    OpenGL
 
 DESCRIPTION
     This tutorial is intended to demonstrate the creation of a trivial but
