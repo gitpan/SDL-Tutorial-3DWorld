@@ -13,6 +13,7 @@ inc/Module/Install/WriteAll.pm
 lib/SDL/Tutorial/3DWorld.pm
 lib/SDL/Tutorial/3DWorld/Actor.pm
 lib/SDL/Tutorial/3DWorld/Actor/GridCube.pm
+lib/SDL/Tutorial/3DWorld/Actor/Model.pm
 lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm
 lib/SDL/Tutorial/3DWorld/Actor/TextureCube.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
@@ -39,6 +40,10 @@ README
 script/3dworld
 share/chessboard.jpg
 share/crate1.jpg
+share/model/lollipop/hflollipop1gr.rwx
+share/model/lollipop/hflollipop1pr.rwx
+share/model/lollipop/hflollipop1rd.rwx
+share/model/lollipop/white.jpg
 share/skybox/east.jpg
 share/skybox/north.jpg
 share/skybox/south.jpg
