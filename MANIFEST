@@ -16,11 +16,15 @@ lib/SDL/Tutorial/3DWorld/Actor/GridCube.pm
 lib/SDL/Tutorial/3DWorld/Actor/Model.pm
 lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm
 lib/SDL/Tutorial/3DWorld/Actor/TextureCube.pm
+lib/SDL/Tutorial/3DWorld/Actor/TronBit.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
 lib/SDL/Tutorial/3DWorld/Landscape.pm
+lib/SDL/Tutorial/3DWorld/Landscape/Infinite.pm
 lib/SDL/Tutorial/3DWorld/Light.pm
+lib/SDL/Tutorial/3DWorld/OpenGL.pm
 lib/SDL/Tutorial/3DWorld/Skybox.pm
 lib/SDL/Tutorial/3DWorld/Texture.pm
+lib/SDL/Tutorial/3DWorld/Tile.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
@@ -40,6 +44,7 @@ README
 script/3dworld
 share/chessboard.jpg
 share/crate1.jpg
+share/ground.jpg
 share/model/lollipop/hflollipop1gr.rwx
 share/model/lollipop/hflollipop1pr.rwx
 share/model/lollipop/hflollipop1rd.rwx
