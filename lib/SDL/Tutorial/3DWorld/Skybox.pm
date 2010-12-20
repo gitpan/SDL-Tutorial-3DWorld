@@ -37,10 +37,11 @@ the movement of the camera (making them appear to be a long way away).
 use strict;
 use warnings;
 use File::Spec                      ();
+use SDL::Tutorial::3DWorld          ();
 use SDL::Tutorial::3DWorld::Texture ();
 use OpenGL;
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 =pod
 
@@ -147,7 +148,7 @@ sub init {
 # is being drawn on correctly.
 sub display {
 	my $self   = shift;
-	my $camera = shift;
+	my $camera = SDL::Tutorial::3DWorld->current->camera;
 
 	# To make the skybox special effect work, we move the cube so that
 	# it is always centred around the camera.

@@ -37,7 +37,7 @@ use warnings;
 use OpenGL;
 use SDL::Tutorial::3DWorld::Actor ();
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 =pod
@@ -85,8 +85,11 @@ sub display {
 	glDisable( GL_TEXTURE_2D );
 	$self->display_material;
 
-	# Draw the teapot
+	# Draw the teapot.
+	# The teapot does not handle face culling, so disable temporarily.
+	glDisable( GL_CULL_FACE );
 	OpenGL::glutSolidTeapot($self->{size});
+	glEnable( GL_CULL_FACE );
 
 	return;
 }

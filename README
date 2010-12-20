@@ -32,10 +32,23 @@ METHODS
 
     It does not current take any parameters.
 
+  camera
+    The "camera" method returns the currently active camera for the world.
+
+    Provided as a convenience for world objects that need to know where the
+    camera is (such as the skybox).
+
+  sdl
+    The "sdl" method returns the master SDLx::App object for the world.
+
   run
     The "run" method is used to run the game. It takes care of all stages of
     the game including initialisation and shutdown operations at the start
     and end of the game.
+
+  current
+    The "current" method can be used by any arbitrary world element to get
+    access to the world while it is running.
 
 SUPPORT
     Bugs should be reported via the CPAN bug tracker at

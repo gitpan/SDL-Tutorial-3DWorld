@@ -63,12 +63,17 @@ use SDL::Tutorial::3DWorld::Actor::Teapot       ();
 use SDL::Tutorial::3DWorld::Actor::GridCube     ();
 use SDL::Tutorial::3DWorld::Actor::TextureCube  ();
 use SDL::Tutorial::3DWorld::Camera              ();
+use SDL::Tutorial::3DWorld::Camera::Fly         ();
+use SDL::Tutorial::3DWorld::Console             ();
 use SDL::Tutorial::3DWorld::Skybox              ();
 use SDL::Tutorial::3DWorld::Texture             ();
 use SDL::Tutorial::3DWorld::Landscape           ();
 use SDL::Tutorial::3DWorld::Landscape::Infinite ();
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
+
+# The currently active world
+our $CURRENT = undef;
 
 =pod
 
@@ -90,6 +95,9 @@ sub new {
 		dt         => 0.1,
 	}, $class;
 
+	# Text console that overlays the world
+	$self->{console} = SDL::Tutorial::3DWorld::Console->new;
+
 	# A pretty skybox background for our world
 	$self->{skybox} = SDL::Tutorial::3DWorld::Skybox->new(
 		type      => 'jpg',
@@ -99,6 +107,15 @@ sub new {
 	# Create the landscape
 	$self->{landscape} = SDL::Tutorial::3DWorld::Landscape::Infinite->new(
 		texture => $self->sharefile('ground.jpg'),
+	);
+
+	# Place the camera at a typical eye height a few metres back
+	# from the teapots and facing slightly down towards them.
+	$self->{camera} = SDL::Tutorial::3DWorld::Camera::Fly->new(
+		X     => 0.0,
+		Y     => 1.5,
+		Z     => 5.0,
+		speed => $self->dscalar( 2 ),
 	);
 
 	# Place three airborn stationary teapots in the scene
@@ -163,16 +180,17 @@ sub new {
 			Z       => 3.35,
 			size    => 1.3,
 			texture => $self->sharefile('crate1.jpg'),
+			ambient => [ 0.5, 0.5, 0.5, 1 ],
 		),
 
 		# Place a lollipop at the origin
-		SDL::Tutorial::3DWorld::Actor::Model->new(
-			X        => -2,
-			Y        => 0,
-			Z        => 0,
-			velocity => [ 0, 0, 0 ],
-			file     => File::Spec->catfile('model', 'lollipop', 'hflollipop1gr.rwx'),
-		),
+		# SDL::Tutorial::3DWorld::Actor::Model->new(
+			# X        => -2,
+			# Y        => 0,
+			# Z        => 0,
+			# velocity => [ 0, 0, 0 ],
+			# file     => File::Spec->catfile('model', 'lollipop', 'hflollipop1gr.rwx'),
+		# ),
 
 	];
 
@@ -185,17 +203,42 @@ sub new {
 		),
 	];
 
-	# Place the camera at a typical eye height a few metres back
-	# from the teapots and facing slightly down towards them.
-	$self->{camera} = SDL::Tutorial::3DWorld::Camera->new(
-		X     => 0.0,
-		Y     => 1.5,
-		Z     => 5.0,
-		speed => $self->dscalar( 2 ),
-	);
-
 	return $self;
 }
+
+=pod
+
+=head2 camera
+
+The C<camera> method returns the currently active camera for the world.
+
+Provided as a convenience for world objects that need to know where the
+camera is (such as the skybox).
+
+=cut
+
+sub camera {
+	$_[0]->{camera};
+}
+
+=pod
+
+=head2 sdl
+
+The C<sdl> method returns the master L<SDLx::App> object for the world.
+
+=cut
+
+sub sdl {
+	$_[0]->{sdl};
+}
+
+
+
+
+
+######################################################################
+# Main Methods
 
 =pod
 
@@ -230,10 +273,26 @@ sub run {
 		$self->event(@_);
 	} );
 
+	# This world is now the active world
+	local $CURRENT = $self;
+
 	# Enter the main loop
 	$self->{sdl}->run;
 
 	return 1;
+}
+
+=pod
+
+=head2 current
+
+The C<current> method can be used by any arbitrary world element to get
+access to the world while it is running.
+
+=cut
+
+sub current {
+	$CURRENT or die "No current world is running";
 }
 
 
@@ -265,11 +324,17 @@ sub init {
 		fullscreen    => $fullscreen,
 		depth         => 24, # Prevent harsh colour stepping
 		double_buffer => 1,  # Reduce flicker during rapid mouselook
+		min_t         => 0,  # As many frames as possible
 	);
+
+	# Enable face culling to remove drawing of all surfaces that
+	# we can't see.
+	glCullFace( GL_FRONT );
+	glEnable( GL_CULL_FACE );
 
 	# Enable the Z buffer (DEPTH BUFFER) so that OpenGL will do all the
 	# correct shape culling for us and we don't have to care about it.
-	glDepthFunc( GL_LEQUAL );
+	glDepthFunc( GL_LESS );
 	glEnable( GL_DEPTH_TEST );
 
 	# Use the prettiest shading available to us
@@ -315,6 +380,11 @@ sub init {
 		$actor->init;
 	}
 
+	# Initialise the console
+	if ( $self->{console} ) {
+		$self->{console}->init;
+	}
+
 	return 1;
 }
 
@@ -332,11 +402,8 @@ sub display {
 	# NOTE: For now just translate back so we can see the render.
 	$self->{camera}->display;
 
-	# Draw the skybox.
-	# It needs to track the camera is to do it's special effect trickery
-	if ( $self->{skybox} ) {
-		$self->{skybox}->display( $self->{camera} );
-	}
+	# Draw the skybox
+	$self->{skybox}->display if $self->{skybox};
 
 	# Draw the landscape in the scene
 	$self->{landscape}->display;
@@ -354,7 +421,7 @@ sub display {
 	# OpenGL global states (GL_LIGHTING, GL_TEXTURE_2D, etc) properly
 	# and won't break later because they happen to be used in a
 	# different order. If we are doing something wrong, some objects
-	# in the scene should flicker horribly badly.
+	# in the scene should flicker randomly.
 	my @actors = sort { rand() <=> rand() } @{$self->{actors}};
 	foreach my $actor ( @actors ) {
 		# Draw each actor in their own stack context so that
@@ -363,6 +430,9 @@ sub display {
 		$actor->display;
 		glPopMatrix();
 	}
+
+	# Draw the console last, on top of everything else
+	$self->{console}->display if $self->{console};
 
 	return 1;
 }

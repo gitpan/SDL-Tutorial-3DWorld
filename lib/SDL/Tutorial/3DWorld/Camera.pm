@@ -37,7 +37,7 @@ use SDL::Constants ();
 
 use constant D2R => CORE::atan2(1,1) / 45;
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 =pod
 
@@ -227,9 +227,6 @@ sub move {
 	my $step  = shift;
 	my $speed = $self->{speed} * $step;
 	my $down  = $self->{down};
-
-	# Are we running?
-	$speed = $speed * 2.5 if $down->{SDL::Constants::SDLK_LSHIFT};
 
 	# Find the camera-wards and sideways components of our velocity
 	my $move = $speed * (

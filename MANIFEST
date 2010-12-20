@@ -18,6 +18,8 @@ lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm
 lib/SDL/Tutorial/3DWorld/Actor/TextureCube.pm
 lib/SDL/Tutorial/3DWorld/Actor/TronBit.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
+lib/SDL/Tutorial/3DWorld/Camera/Fly.pm
+lib/SDL/Tutorial/3DWorld/Console.pm
 lib/SDL/Tutorial/3DWorld/Landscape.pm
 lib/SDL/Tutorial/3DWorld/Landscape/Infinite.pm
 lib/SDL/Tutorial/3DWorld/Light.pm
