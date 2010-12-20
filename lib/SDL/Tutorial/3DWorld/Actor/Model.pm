@@ -29,11 +29,12 @@ RWX model files on disk.
 use 5.008;
 use strict;
 use warnings;
-use OpenGL::RWX                   ();
 use SDL::Tutorial::3DWorld        ();
 use SDL::Tutorial::3DWorld::Actor ();
+use SDL::Tutorial::3DWorld::OBJ   ();
+use SDL::Tutorial::3DWorld::RWX   ();
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -46,10 +47,20 @@ sub new {
 		die "Model file '$self->{file}' does not exist";
 	}
 
-	# Create the RWX object
-	$self->{rwx} = OpenGL::RWX->new(
-		file => $self->{file},
-	);
+	# Create the type-specific object
+	if ( $self->{file} =~ /\.rwx$/ ) {
+		$self->{list} = SDL::Tutorial::3DWorld::RWX->new(
+			file => $self->{file},
+		);
+
+	} elsif ( $self->{file} =~ /\.obj$/ ) {
+		$self->{list} = SDL::Tutorial::3DWorld::OBJ->new(
+			file => $self->{file},
+		);
+
+	} else {
+		die "Unkown or unsupported file '$self->{file}'";
+	}
 
 	return $self;
 }
@@ -66,7 +77,7 @@ sub init {
 	$self->SUPER::init(@_);
 
 	# Load the model as a display list
-	$self->{rwx}->init;
+	$self->{list}->init;
 }
 
 sub display {
@@ -82,7 +93,7 @@ sub display {
 	OpenGL::glScalef( 0.5, 0.5, 0.5 );
 
 	# Render the model
-	$self->{rwx}->display;
+	$self->{list}->display;
 
 	return;
 }
