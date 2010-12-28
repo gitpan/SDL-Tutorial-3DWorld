@@ -29,12 +29,12 @@ RWX model files on disk.
 use 5.008;
 use strict;
 use warnings;
-use SDL::Tutorial::3DWorld        ();
-use SDL::Tutorial::3DWorld::Actor ();
-use SDL::Tutorial::3DWorld::OBJ   ();
-use SDL::Tutorial::3DWorld::RWX   ();
+use SDL::Tutorial::3DWorld             ();
+use SDL::Tutorial::3DWorld::Actor      ();
+use SDL::Tutorial::3DWorld::Asset::OBJ ();
+use SDL::Tutorial::3DWorld::Asset::RWX ();
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -49,13 +49,14 @@ sub new {
 
 	# Create the type-specific object
 	if ( $self->{file} =~ /\.rwx$/ ) {
-		$self->{list} = SDL::Tutorial::3DWorld::RWX->new(
-			file => $self->{file},
+		$self->{model} = SDL::Tutorial::3DWorld::Asset::RWX->new(
+			file  => $self->{file},
 		);
 
 	} elsif ( $self->{file} =~ /\.obj$/ ) {
-		$self->{list} = SDL::Tutorial::3DWorld::OBJ->new(
-			file => $self->{file},
+		$self->{model} = SDL::Tutorial::3DWorld::Asset::OBJ->new(
+			file  => $self->{file},
+			plain => $self->{plain},
 		);
 
 	} else {
@@ -77,7 +78,17 @@ sub init {
 	$self->SUPER::init(@_);
 
 	# Load the model as a display list
-	$self->{list}->init;
+	$self->{model}->init;
+
+	# Do we need blending support?
+	if ( $self->{model}->{blending} ) {
+		$self->{blending} = 1;
+	}
+
+	# Get the bounding box from the model
+	$self->{box} = $self->{model}->{box};
+
+	return 1;
 }
 
 sub display {
@@ -86,14 +97,8 @@ sub display {
 	# Move to the correct location
 	$self->SUPER::display(@_);
 
-	# RWX files are at a scale 1/10th that of our world.
-	OpenGL::glScalef( 10, 10, 10 );
-
-	# The test model is oversized a bit, halve it
-	OpenGL::glScalef( 0.5, 0.5, 0.5 );
-
 	# Render the model
-	$self->{list}->display;
+	$self->{model}->display;
 
 	return;
 }

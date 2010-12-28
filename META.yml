@@ -25,13 +25,16 @@ no_index:
     - xt
 requires:
   File::ShareDir: 1.02
-  File::Spec: 0.80
+  File::Spec: 3.31
+  IO::File: 1.14
+  List::MoreUtils: 0.22
   OpenGL: 0.64
   OpenGL::List: 0.01
+  Params::Util: 1.00
   SDL: 2.524
   perl: 5.8.5
 resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/SDL-Tutorial-3DWorld
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/SDL-Tutorial-3DWorld
-version: 0.20
+version: 0.21
