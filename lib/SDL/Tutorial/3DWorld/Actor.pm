@@ -45,7 +45,7 @@ use warnings;
 use SDL::Tutorial::3DWorld::OpenGL   ();
 use SDL::Tutorial::3DWorld::Material ();
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 =head2 new
 
@@ -68,6 +68,9 @@ sub new {
 
 		# Most things in the world are solid
 		blending => 0,
+
+		# Most things are visible by default
+		hidden   => 0,
 
 		# Most objects are stored at the correct size
 		scale    => 0,

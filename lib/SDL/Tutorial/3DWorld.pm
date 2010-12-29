@@ -59,7 +59,7 @@ use SDL                                      2.524 ':all';
 use SDL::Event                                     ':all';
 use SDLx::App                                      ();
 use SDL::Tutorial::3DWorld::Actor                  ();
-use SDL::Tutorial::3DWorld::Actor::Box             ();
+use SDL::Tutorial::3DWorld::Actor::Debug           ();
 use SDL::Tutorial::3DWorld::Actor::Model           ();
 use SDL::Tutorial::3DWorld::Actor::Teapot          ();
 use SDL::Tutorial::3DWorld::Actor::GridCube        ();
@@ -67,7 +67,7 @@ use SDL::Tutorial::3DWorld::Actor::TextureCube     ();
 use SDL::Tutorial::3DWorld::Actor::MaterialSampler ();
 use SDL::Tutorial::3DWorld::Asset                  ();
 use SDL::Tutorial::3DWorld::Camera                 ();
-use SDL::Tutorial::3DWorld::Camera::Fly            ();
+use SDL::Tutorial::3DWorld::Camera::God            ();
 use SDL::Tutorial::3DWorld::Console                ();
 use SDL::Tutorial::3DWorld::Landscape              ();
 use SDL::Tutorial::3DWorld::Landscape::Infinite    ();
@@ -78,7 +78,7 @@ use SDL::Tutorial::3DWorld::OpenGL                 ();
 use SDL::Tutorial::3DWorld::Skybox                 ();
 use SDL::Tutorial::3DWorld::Texture                ();
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 # The currently active world
 our $CURRENT = undef;
@@ -102,9 +102,9 @@ sub new {
 		height     => 800,
 		dt         => 0.1,
 
-		# Making the glClear settings variable allows us to
-		# dynamically add or remove features like motion blur.
-		clear      => GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+		# Debugging elements we can toggle
+		hide_debug     => 0,
+		hide_expensive => 0,
 	}, $class;
 
 	# Text console that overlays the world
@@ -123,7 +123,7 @@ sub new {
 
 	# Place the camera at a typical eye height a few metres back
 	# from the teapots and facing slightly down towards them.
-	$self->{camera} = SDL::Tutorial::3DWorld::Camera::Fly->new(
+	$self->{camera} = SDL::Tutorial::3DWorld::Camera::God->new(
 		X     => 0.0,
 		Y     => 1.5,
 		Z     => 5.0,
@@ -245,7 +245,7 @@ sub new {
 
 	# Add a bounding box viewer to as many objects as support it
 	push @$actors, map {
-		SDL::Tutorial::3DWorld::Actor::Box->new( parent => $_ )
+		SDL::Tutorial::3DWorld::Actor::Debug->new( parent => $_ )
 	} @$actors;
 
 	# Light the world with a single overhead light
@@ -256,6 +256,18 @@ sub new {
 			Z => -400,
 		),
 	];
+
+	# Optimisation:
+	# If we have a skybox then now part of the scene will ever show
+	# the background. As a result, we can clear only the depth buffer
+	# and this will result in the color buffer just being drawn over.
+	# This removes a fairly large memory clear operation and speeds
+	# up frame-initialisation phase of the rendering pipeline.
+	if ( $self->{skybox} ) {
+		$self->{clear} = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+	} else {
+		$self->{clear} = GL_DEPTH_BUFFER_BIT;
+	}
 
 	return $self;
 }
@@ -512,11 +524,36 @@ sub event {
 	my $event = shift;
 	my $type  = $event->type;
 
-	# Quit option
 	if ( $type == SDL_KEYDOWN ) {
 		my $key = $event->key_sym;
+
+		# Quit the world
 		if ( $key == SDLK_ESCAPE ) {
 			$self->{sdl}->stop;
+			return 1;
+		}
+
+		# Toggle visibility of debugging actors
+		if ( $key == SDLK_F1 ) {
+			$self->{hide_debug} = $self->{hide_debug} ? 0 : 1;
+			foreach my $actor ( @{$self->{actors}} ) {
+				next unless $actor->isa('SDL::Tutorial::3DWorld::Actor::Debug');
+				$actor->{hidden} = $self->{hide_debug};
+			}
+			return 1;
+		}
+
+		# Toggle visibility for unrealistically-expensive actors
+		if ( $key == SDLK_F2 ) {
+			$self->{hide_expensive} = $self->{hide_expensive} ? 0 : 1;
+			foreach my $actor ( @{$self->{actors}} ) {
+				if ( $actor->isa('SDL::Tutorial::3DWorld::Actor::MaterialSampler') ) {
+					$actor->{hidden} = $self->{hide_expensive};
+				}
+				if ( $actor->isa('SDL::Tutorial::3DWorld::Actor::Teapot') ) {
+					$actor->{hidden} = $self->{hide_expensive};
+				}
+			}
 			return 1;
 		}
 	}
@@ -562,6 +599,9 @@ sub display_actors {
 	my @solid = ();
 	my @blend = ();
 	foreach my $actor ( @{$self->{actors}} ) {
+		# Don't render actors that are intentionall hidden
+		next if $actor->{hidden};
+
 		# Don't render actors that aren't in our field of view
 		my @box     = $actor->box;
 		my $visible = @box

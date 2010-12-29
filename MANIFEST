@@ -12,7 +12,7 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/SDL/Tutorial/3DWorld.pm
 lib/SDL/Tutorial/3DWorld/Actor.pm
-lib/SDL/Tutorial/3DWorld/Actor/Box.pm
+lib/SDL/Tutorial/3DWorld/Actor/Debug.pm
 lib/SDL/Tutorial/3DWorld/Actor/GridCube.pm
 lib/SDL/Tutorial/3DWorld/Actor/MaterialSampler.pm
 lib/SDL/Tutorial/3DWorld/Actor/Model.pm
@@ -25,8 +25,9 @@ lib/SDL/Tutorial/3DWorld/Asset/MTL.pm
 lib/SDL/Tutorial/3DWorld/Asset/OBJ.pm
 lib/SDL/Tutorial/3DWorld/Asset/RWX.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
-lib/SDL/Tutorial/3DWorld/Camera/Fly.pm
+lib/SDL/Tutorial/3DWorld/Camera/God.pm
 lib/SDL/Tutorial/3DWorld/Console.pm
+lib/SDL/Tutorial/3DWorld/HeightMap.pm
 lib/SDL/Tutorial/3DWorld/Landscape.pm
 lib/SDL/Tutorial/3DWorld/Landscape/Infinite.pm
 lib/SDL/Tutorial/3DWorld/Light.pm
@@ -35,7 +36,6 @@ lib/SDL/Tutorial/3DWorld/Model.pm
 lib/SDL/Tutorial/3DWorld/OpenGL.pm
 lib/SDL/Tutorial/3DWorld/Skybox.pm
 lib/SDL/Tutorial/3DWorld/Texture.pm
-lib/SDL/Tutorial/3DWorld/Tile.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

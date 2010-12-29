@@ -22,10 +22,9 @@ use strict;
 use warnings;
 use Params::Util '_INSTANCE';
 use SDL::Tutorial::3DWorld::OpenGL    ();
-use SDL::Tutorial::3DWorld::Tile      ();
 use SDL::Tutorial::3DWorld::Landscape ();
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 our @ISA     = 'SDL::Tutorial::3DWorld::Landscape';
 
 sub new {
@@ -33,8 +32,8 @@ sub new {
 	my $self  = bless { @_ }, $class;
 
 	# Convert the texture parameter to a texture object
-	unless ( _INSTANCE($self->{texture}, 'SDL::Tutorial::3DWorld::Tile') ) {
-		$self->{texture} = SDL::Tutorial::3DWorld::Tile->new(
+	unless ( _INSTANCE($self->{texture}, 'SDL::Tutorial::3DWorld::Texture') ) {
+		$self->{texture} = SDL::Tutorial::3DWorld::Texture->new(
 			file => $self->{texture},
 		);
 	}

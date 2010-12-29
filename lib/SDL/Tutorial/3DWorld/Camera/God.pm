@@ -1,10 +1,10 @@
-package SDL::Tutorial::3DWorld::Camera::Fly;
+package SDL::Tutorial::3DWorld::Camera::God;
 
 =pod
 
 =head1 NAME
 
-SDL::Tutorial::3DWorld::Camera::Fly - A "God Mode" flying person camera
+SDL::Tutorial::3DWorld::Camera::God - A "God Mode" flying person camera
 
 =head1 DESCRIPTION
 
@@ -25,7 +25,7 @@ use SDL::Mouse;
 use SDL::Constants                 ();
 use SDL::Tutorial::3DWorld::Camera ();
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 our @ISA     = 'SDL::Tutorial::3DWorld::Camera';
 
 use constant D2R => CORE::atan2(1,1) / 45;
@@ -38,6 +38,7 @@ sub new {
 
 	# Space makes us lift
 	$self->{down}->{SDL::Constants::SDLK_SPACE} = 0;
+	$self->{down}->{SDL::Constants::SDLK_LCTRL} = 0;
 
 	return $self;
 }
@@ -68,7 +69,8 @@ sub move {
 	           - $down->{SDL::Constants::SDLK_s};
 	my $strafe = $down->{SDL::Constants::SDLK_d}
 	           - $down->{SDL::Constants::SDLK_a};
-	my $lift   = $down->{SDL::Constants::SDLK_SPACE};
+	my $lift   = $down->{SDL::Constants::SDLK_SPACE}
+	           - $down->{SDL::Constants::SDLK_LCTRL};
 
 	# Apply this movement in the direction of the camera.
 	# Math applied unoptimised and longhand for greater readability.

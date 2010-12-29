@@ -1,6 +1,23 @@
 Changes for Perl extension SDL-Tutorial-3DWorld
 
-0.21 Tue 21 Dec 2010
+0.22 Wed 29 Dec 2010
+	- The bounding box actor now also displays a traditional
+	  red/green/blue axis on the original of each actor.
+	- Flying camera renamed as the God camera.
+	- All textures now wrap by default removing the need for the
+	  Tile class at all.
+	- In light of it's expanded role, renamed ::Actor::Box to the
+	  more general sounding ::Actor::Debug.
+	- We don't need to clear the color buffer when we have a skybox.
+	  Clearing only the depth buffer will have the exact same effect.
+	- Adding support for a ->{hidden} property on actors that allows
+	  them to intentionally make themselves invisible.
+	- Left CTRL now provides negative lift to the God-mode camera.
+	  i.e. It makes you go vertically downwards.
+	- Added F1 toggle to enable/disable debuging actors
+	- Added F2 toggle to enable/disable abusingly expensive actors
+
+0.21 Tue 28 Dec 2010
 	- Adding directory-based asset support, which is needed for linking
 	  model files to their supporting texture (etc) files.
 	- Reorganised the file parsers into the ::Asset::* namespace.
@@ -21,6 +38,11 @@ Changes for Perl extension SDL-Tutorial-3DWorld
 	  respective MTL files.
 	- Added a plain => 1 option for disabling automatic MTL loading in cases
 	  where there is no MTL file and you just want a plain OBJ model.
+	- Added a herd of dangerous wild toilet plungers.
+	- Added a simple demonstration of actor-culling optimisation that skips
+	  drawing any actor that is behind the camera. This is nowhere near as good
+	  as frustrum culling (culling to the cemera's observation pyramid) but is
+	  simpler to implement and does the job for now.
 
 0.20 Mon 20 Dec 2010
 	- Apparently OpenGL convention dictates that all polygons have their
@@ -34,7 +56,7 @@ Changes for Perl extension SDL-Tutorial-3DWorld
 	  polygons (important on polished wood toys)
 	- Added preliminary support for OBJ models (only with per-face surface
 	  normals at this point).
-	- Added a superbly details and giant freaking table to demonstrate the
+	- Added a superbly detailed and giant freaking table to demonstrate the
 	  greater quality of objects you tend to be able to find for obj files.
 
 0.19 Mon 20 Dec 2010

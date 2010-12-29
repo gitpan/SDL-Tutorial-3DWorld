@@ -47,7 +47,7 @@ use SDL::Tutorial::3DWorld::OpenGL ();
 use SDL::Surface     ();
 use SDL::PixelFormat ();
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 =pod
 
@@ -170,6 +170,13 @@ sub init {
 		OpenGL::GL_TEXTURE_2D,
 		OpenGL::GL_TEXTURE_MAG_FILTER,
 		OpenGL::GL_LINEAR, # OpenGL::GL_NEAREST,
+	);
+
+	# Wrap the textures
+	OpenGL::glTexParameterf(
+		OpenGL::GL_TEXTURE_2D,
+		OpenGL::GL_TEXTURE_WRAP_S,
+		OpenGL::GL_REPEAT,
 	);
 
 	# Write the image data into the texture, generating a mipmap for
