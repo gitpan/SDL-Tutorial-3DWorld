@@ -78,7 +78,7 @@ use SDL::Tutorial::3DWorld::OpenGL                 ();
 use SDL::Tutorial::3DWorld::Skybox                 ();
 use SDL::Tutorial::3DWorld::Texture                ();
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 # The currently active world
 our $CURRENT = undef;
@@ -104,6 +104,7 @@ sub new {
 
 		# Debugging elements we can toggle
 		hide_debug     => 0,
+		hide_console   => 0,
 		hide_expensive => 0,
 	}, $class;
 
@@ -499,7 +500,9 @@ sub display {
 	}
 
 	# Draw the console last, on top of everything else
-	$self->{console}->display if $self->{console};
+	if ( $self->{console} and not $self->{hide_console} ) {
+		$self->{console}->display;
+	}
 
 	return 1;
 }
@@ -556,6 +559,12 @@ sub event {
 			}
 			return 1;
 		}
+
+		# Toggle visibility of the console (i.e. the FPS display)
+		if ( $key == SDLK_F3 ) {
+			$self->{hide_console} = $self->{hide_console} ? 0 : 1;
+			return 1;
+		}
 	}
 
 	# Handle any events related to the camera
@@ -593,9 +602,9 @@ sub display_actors {
 	my $self   = shift;
 	my $camera = $self->{camera};
 
-	# The order of solid actors doesn't really matter.
-	# Split them from the ones that need blending so we sort on the least
-	# number of actors we have to.
+	# Apply optimisation strategies to remove things we don't need to
+	# draw. At the same time split solid and transparent objects apart
+	# as we will use different rendering optimisations for each type.
 	my @solid = ();
 	my @blend = ();
 	foreach my $actor ( @{$self->{actors}} ) {
@@ -618,10 +627,20 @@ sub display_actors {
 		}
 	}
 
-	# Sort only the blending objects (if we have any)
-	@blend = map { $blend[$_] } $self->camera->distance_isort(
+	# Sort the solid objects from nearest to farthest. If a large
+	# model is close to the camera then any object behind it only
+	# needs to be depth-testing and all the work to colour, texture
+	# and light the object can be skipped by OpenGL.
+	@solid = reverse map { $solid[$_] } $self->camera->distance_isort(
+		map { $_->{position} } @solid
+	);
+
+	# Sort the blending objects from farthest to nearest. A transparent
+	# object needs to have everything behind it drawn so that it can
+	# do the alpha transparency over the top of it,
+	@blend = map { $blend[$_] } $camera->distance_isort(
 		map { $_->{position} } @blend
-	) if @blend;
+	);
 
 	return ( @solid, @blend );
 }

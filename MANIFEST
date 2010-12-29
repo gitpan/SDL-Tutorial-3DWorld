@@ -20,7 +20,6 @@ lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm
 lib/SDL/Tutorial/3DWorld/Actor/TextureCube.pm
 lib/SDL/Tutorial/3DWorld/Actor/TronBit.pm
 lib/SDL/Tutorial/3DWorld/Asset.pm
-lib/SDL/Tutorial/3DWorld/Asset/Mesh.pm
 lib/SDL/Tutorial/3DWorld/Asset/MTL.pm
 lib/SDL/Tutorial/3DWorld/Asset/OBJ.pm
 lib/SDL/Tutorial/3DWorld/Asset/RWX.pm
@@ -32,6 +31,7 @@ lib/SDL/Tutorial/3DWorld/Landscape.pm
 lib/SDL/Tutorial/3DWorld/Landscape/Infinite.pm
 lib/SDL/Tutorial/3DWorld/Light.pm
 lib/SDL/Tutorial/3DWorld/Material.pm
+lib/SDL/Tutorial/3DWorld/Mesh.pm
 lib/SDL/Tutorial/3DWorld/Model.pm
 lib/SDL/Tutorial/3DWorld/OpenGL.pm
 lib/SDL/Tutorial/3DWorld/Skybox.pm

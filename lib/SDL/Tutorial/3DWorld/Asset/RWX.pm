@@ -40,15 +40,15 @@ points in space using the pre-existing material settings.
 use 5.008;
 use strict;
 use warnings;
-use IO::File                            ();
-use File::Spec                          ();
-use OpenGL                              ':all';
-use OpenGL::List                        ();
-use SDL::Tutorial::3DWorld::Model       ();
-use SDL::Tutorial::3DWorld::Asset       ();
-use SDL::Tutorial::3DWorld::Asset::Mesh ();
+use IO::File                      ();
+use File::Spec                    ();
+use OpenGL                        ':all';
+use OpenGL::List                  ();
+use SDL::Tutorial::3DWorld::Mesh  ();
+use SDL::Tutorial::3DWorld::Asset ();
+use SDL::Tutorial::3DWorld::Model ();
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 our @ISA     = 'SDL::Tutorial::3DWorld::Model';
 
 
@@ -61,7 +61,7 @@ our @ISA     = 'SDL::Tutorial::3DWorld::Model';
 sub parse {
 	my $self     = shift;
 	my $handle   = shift;
-	my $mesh     = SDL::Tutorial::3DWorld::Asset::Mesh->new;
+	my $mesh     = SDL::Tutorial::3DWorld::Mesh->new;
 	my $offset   = 0;
 	my $material = 0;
 	my $ambient  = undef;
@@ -86,7 +86,7 @@ sub parse {
 			if ( @words and lc $words[0] eq 'uv' ) {
 				@uv = @words[1,2];
 			}
-			$mesh->add_all( \@vertex, \@normal, \@uv );
+			$mesh->add_all( \@vertex, \@uv, \@normal );
 
 		} elsif ( $command eq 'color' ) {
 			my %param = ( color => [ @words ] );
@@ -132,21 +132,22 @@ sub parse {
 
 		} elsif ( $command eq 'triangle' ) {
 			# Add the triangle with the right offset
+			@words = map { $_ + $offset } @words;
 			$mesh->add_triangle(
-				$words[0] + $offset,
-				$words[1] + $offset,
-				$words[2] + $offset,
 				$material,
+				@words,
+				@words,
+				@words,
 			);
-			
+
 		} elsif ( $command eq 'quad' ) {
 			# Add the quad with the right offset
+			@words = map { $_ + $offset } @words;
 			$mesh->add_quad(
-				$words[0] + $offset,
-				$words[1] + $offset,
-				$words[2] + $offset,
-				$words[3] + $offset,
 				$material,
+				@words,
+				@words,
+				@words,
 			);
 
 		} elsif ( $command eq 'protoend' ) {
