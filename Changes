@@ -1,5 +1,23 @@
 Changes for Perl extension SDL-Tutorial-3DWorld
 
+0.26 Thu 30 Dec 2010
+	- The left mouse button now generates new actors. In true FPS
+	  style these are crates! Since this results in a surprisingly
+	  large amount of trivial but creative minecrafty fun I'm doing a
+	  new release just for this one change. :)
+
+0.25 Thu 30 Dec 2010
+	- The mouse scroll wheel now controls the distance away from the
+	  camera that the selector box will float.
+	- 3DWorld now does a $VERSION integrity scan of all child classes
+	  during initialisation to make sure kthakore hasn't corrupted his
+	  installation (again).
+	- Adding a global texture cache. No noticable impact as we don't
+	  do much reuse of textures in the current world.
+	- Adding a global model cache. Because of the 121 toilet plungers
+	  in our scene this one change reduced startup time by 75%, total
+	  memory consumption by 7 meg (15%) and improved framerate by 5%.
+
 0.24 Thu 29 Dec 2010
 	- Disable solid object display order optimisation, as I suspect it
 	  that the Perl cost to sort them is bigger than the cost of just

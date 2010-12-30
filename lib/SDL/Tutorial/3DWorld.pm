@@ -79,7 +79,7 @@ use SDL::Tutorial::3DWorld::OpenGL                 ();
 use SDL::Tutorial::3DWorld::Skybox                 ();
 use SDL::Tutorial::3DWorld::Texture                ();
 
-our $VERSION = '0.24';
+our $VERSION = '0.26';
 
 # The currently active world
 our $CURRENT = undef;
@@ -386,6 +386,23 @@ sub current {
 sub init {
 	my $self = shift;
 
+	# Verify the integrity of the installation. This shouldn't really
+	# be necesary but kthakore seems to have problems with partial
+	# overwriting his installs and mixing up versions of something.
+	# This is an attempt to at least partially defend against them.
+	foreach my $child ( sort grep { /3DWorld\// } keys %INC ) {
+		$child =~ s/\//::/g;
+		$child =~ s/\.pm//g;
+		next unless Params::Util::_CLASS($child);
+		my $v = $child->VERSION;
+		unless ( $v ) {
+			die "Corrupt installation detected! No \$VERSION in $child";
+		}
+		unless ( $v == $VERSION ) {
+			die "Corrupt installation detected! Got \$VERSION $v in $child but expected $VERSION";
+		}
+	}
+
 	# Normally we want fullscreen, but occasionally we might want to
 	# disable it because we are on a portrait-orientation monitor
 	# or for unobtrusive testing (or it doesn't work on some machine).
@@ -573,6 +590,44 @@ sub event {
 		# Toggle visibility of the console (i.e. the FPS display)
 		if ( $key == SDLK_F3 ) {
 			$self->{hide_console} = $self->{hide_console} ? 0 : 1;
+			return 1;
+		}
+
+	} elsif ( $type == SDL_MOUSEBUTTONDOWN ) {
+		# Make the scroll wheel move the selection box towards
+		# and away from the camera.
+		my $button = $event->button_button;
+		if ( $button == SDL_BUTTON_WHEELUP ) {
+			# Move away from the camera
+			$self->{selector}->{distance} += 0.5;
+			return 1;
+		}
+		if ( $button == SDL_BUTTON_WHEELDOWN ) {
+			# Move towards the camera, stopping
+			# at some suitable minimum distance.
+			$self->{selector}->{distance} -= 0.5;
+			if ( $self->{selector}->{distance} < 2 ) {
+				$self->{selector}->{distance} = 2;
+			}
+			return 1;
+		}
+		if ( $button == SDL_BUTTON_LEFT ) {
+			# Place a new texture box at the selector location
+			my $selector = $self->{selector}->{position};
+			my $cube     = SDL::Tutorial::3DWorld::Actor::TextureCube->new(
+				position => [
+					$selector->[0] + 0.5,
+					$selector->[1],
+					$selector->[2] + 0.5,
+				],
+				material => {
+					ambient => [ 0.5, 0.5, 0.5, 1 ],
+					texture => $self->sharefile('crate1.jpg'),
+				},
+			);
+			$cube->init;
+			push @{$self->{actors}}, $cube;
+
 			return 1;
 		}
 	}
