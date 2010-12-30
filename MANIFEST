@@ -14,6 +14,7 @@ lib/SDL/Tutorial/3DWorld.pm
 lib/SDL/Tutorial/3DWorld/Actor.pm
 lib/SDL/Tutorial/3DWorld/Actor/Debug.pm
 lib/SDL/Tutorial/3DWorld/Actor/GridCube.pm
+lib/SDL/Tutorial/3DWorld/Actor/GridSelect.pm
 lib/SDL/Tutorial/3DWorld/Actor/MaterialSampler.pm
 lib/SDL/Tutorial/3DWorld/Actor/Model.pm
 lib/SDL/Tutorial/3DWorld/Actor/Teapot.pm

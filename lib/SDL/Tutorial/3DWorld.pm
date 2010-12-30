@@ -63,6 +63,7 @@ use SDL::Tutorial::3DWorld::Actor::Debug           ();
 use SDL::Tutorial::3DWorld::Actor::Model           ();
 use SDL::Tutorial::3DWorld::Actor::Teapot          ();
 use SDL::Tutorial::3DWorld::Actor::GridCube        ();
+use SDL::Tutorial::3DWorld::Actor::GridSelect      ();
 use SDL::Tutorial::3DWorld::Actor::TextureCube     ();
 use SDL::Tutorial::3DWorld::Actor::MaterialSampler ();
 use SDL::Tutorial::3DWorld::Asset                  ();
@@ -78,7 +79,7 @@ use SDL::Tutorial::3DWorld::OpenGL                 ();
 use SDL::Tutorial::3DWorld::Skybox                 ();
 use SDL::Tutorial::3DWorld::Texture                ();
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 
 # The currently active world
 our $CURRENT = undef;
@@ -97,12 +98,14 @@ It does not current take any parameters.
 sub new {
 	my $class = shift;
 	my $self  = bless {
-		ARGV       => [ @_ ],
-		width      => 1280,
-		height     => 800,
-		dt         => 0.1,
+		ARGV           => [ @_ ],
+		width          => 1280,
+		height         => 1024,
+		dt             => 0.1,
 
-		# Debugging elements we can toggle
+		# Debugging or expensive elements we can toggle off.
+		# Turning all of these three off gives us a much more
+		# accurate assessment on how fast a real world would perform.
 		hide_debug     => 0,
 		hide_console   => 0,
 		hide_expensive => 0,
@@ -131,8 +134,15 @@ sub new {
 		speed => $self->dscalar( 2 ),
 	);
 
+	# The selector is an actor and a special camera tool for
+	#(potentially) controlling something in the world.
+	$self->{selector} = SDL::Tutorial::3DWorld::Actor::GridSelect->new;
+
 	# Place three airborn stationary teapots in the scene
 	my $actors = $self->{actors} = [
+
+		# Make sure we add the selector to the actor list.
+		$self->{selector},
 
 		# (R)ed is the official colour of the X axis
 		SDL::Tutorial::3DWorld::Actor::Teapot->new(
@@ -389,7 +399,7 @@ sub init {
 	# Are we doing a benchmarking run?
 	# If so set the flag and we will abort after 100 seconds.
 	$self->{benchmark} = scalar grep { $_ eq '--benchmark' } @{$self->{ARGV}};
-	
+
 	# Create the SDL application object
 	$self->{sdl} = SDLx::App->new(
 		title         => '3D World',
@@ -631,9 +641,12 @@ sub display_actors {
 	# model is close to the camera then any object behind it only
 	# needs to be depth-testing and all the work to colour, texture
 	# and light the object can be skipped by OpenGL.
-	@solid = reverse map { $solid[$_] } $self->camera->distance_isort(
-		map { $_->{position} } @solid
-	);
+	# NOTE: This is disabled for the time being as I suspect the
+	# cost of the geometry math and sorting in Perl is larger than
+	# the cost of just brute forcing it in modern graphics hardware.
+	# @solid = reverse map { $solid[$_] } $self->camera->distance_isort(
+		# map { $_->{position} } @solid
+	# );
 
 	# Sort the blending objects from farthest to nearest. A transparent
 	# object needs to have everything behind it drawn so that it can

@@ -30,7 +30,7 @@ use OpenGL::List ();
 # Use proper POSIX math rather than playing games with Perl's int()
 use POSIX ();
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -114,6 +114,8 @@ sub compile_lines {
 	OpenGL::glEnable( OpenGL::GL_LINE_SMOOTH );
 
 	# Draw all the lines in the cube
+	OpenGL::glLineWidth(1);
+	OpenGL::glColor4f( 1, 1, 1, 1 );
 	OpenGL::glBegin( OpenGL::GL_LINES );
 	OpenGL::glVertex3f( 0, 0, 0 ); OpenGL::glVertex3f( 1, 0, 0 );
 	OpenGL::glVertex3f( 0, 0, 0 ); OpenGL::glVertex3f( 0, 1, 0 );
