@@ -33,8 +33,9 @@ use SDL::Tutorial::3DWorld             ();
 use SDL::Tutorial::3DWorld::Actor      ();
 use SDL::Tutorial::3DWorld::Asset::OBJ ();
 use SDL::Tutorial::3DWorld::Asset::RWX ();
+use OpenGL::List                       ();
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -74,19 +75,56 @@ sub new {
 # Engine Methods
 
 sub init {
-	my $self = shift;
+	my $self  = shift;
+	my $model = $self->{model};
 	$self->SUPER::init(@_);
 
-	# Load the model as a display list
-	$self->{model}->init;
+	# Load the model display list
+	$model->init;
 
 	# Do we need blending support?
-	if ( $self->{model}->{blending} ) {
+	if ( $model->{blending} ) {
 		$self->{blending} = 1;
 	}
 
 	# Get the bounding box from the model
-	$self->{box} = $self->{model}->{box};
+	my $scale = $self->{scale};
+	if ( $scale ) {
+		$self->{box} = [
+			$model->{box}->[0] * $scale->[0],
+			$model->{box}->[1] * $scale->[1],
+			$model->{box}->[2] * $scale->[2],
+			$model->{box}->[3] * $scale->[0],
+			$model->{box}->[4] * $scale->[1],
+			$model->{box}->[5] * $scale->[2],
+		];
+	} else {
+		$self->{box} = $model->{box};
+	}
+
+	# Static model optimisations
+	unless ( $self->{velocity} ) {
+		# set the origin-relative boundary
+		$self->{boundary} = [
+			$self->{box}->[0] + $self->{position}->[0],
+			$self->{box}->[1] + $self->{position}->[1],
+			$self->{box}->[2] + $self->{position}->[2],
+			$self->{box}->[3] + $self->{position}->[0],
+			$self->{box}->[4] + $self->{position}->[1],
+			$self->{box}->[5] + $self->{position}->[2],
+		];
+
+		# Compile the entire display routine
+		$self->{display} = OpenGL::List::glpList {
+			OpenGL::glPushMatrix();
+			OpenGL::glTranslatef( @{$self->{position}} );
+			if ( $self->{scale} ) {
+				OpenGL::glScalef( @{$self->{scale}} );
+			}
+			OpenGL::glCallList( $model->{list} );
+			OpenGL::glPopMatrix();
+		};
+	}
 
 	return 1;
 }
