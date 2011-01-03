@@ -24,9 +24,11 @@ lib/SDL/Tutorial/3DWorld/Asset.pm
 lib/SDL/Tutorial/3DWorld/Asset/MTL.pm
 lib/SDL/Tutorial/3DWorld/Asset/OBJ.pm
 lib/SDL/Tutorial/3DWorld/Asset/RWX.pm
+lib/SDL/Tutorial/3DWorld/Bound.pm
 lib/SDL/Tutorial/3DWorld/Camera.pm
 lib/SDL/Tutorial/3DWorld/Camera/God.pm
 lib/SDL/Tutorial/3DWorld/Console.pm
+lib/SDL/Tutorial/3DWorld/Frustrum.pm
 lib/SDL/Tutorial/3DWorld/HeightMap.pm
 lib/SDL/Tutorial/3DWorld/Landscape.pm
 lib/SDL/Tutorial/3DWorld/Landscape/Infinite.pm

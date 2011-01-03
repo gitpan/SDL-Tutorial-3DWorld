@@ -11,7 +11,7 @@ use OpenGL::List                   ();
 # Use proper POSIX math rather than playing games with Perl's int()
 use POSIX ();
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -54,8 +54,8 @@ sub init {
 }
 
 sub move {
-	my $self      = shift;
-	my $camera    = SDL::Tutorial::3DWorld->current->camera;
+	my $self   = shift;
+	my $camera = SDL::Tutorial::3DWorld->current->camera;
 
 	# Project the location of the notional point out of the camera
 	# to find the camera-relative position of the box.

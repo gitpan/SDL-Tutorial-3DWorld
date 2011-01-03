@@ -35,8 +35,9 @@ use Params::Util                     '_INSTANCE';
 use SDL::Tutorial::3DWorld::Actor    ();
 use SDL::Tutorial::3DWorld::Texture  ();
 use SDL::Tutorial::3DWorld::Material ();
+use SDL::Tutorial::3DWorld::Bound;
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 =pod
@@ -125,9 +126,9 @@ sub init {
 	}
 
 	# Define the bounding box
-	$self->{box} = [
+	$self->{bound} = SDL::Tutorial::3DWorld::Bound->box(
 		map { $_ * $self->{size} / 2 } ( -1, 0, -1, 1, 2, 1 )
-	];
+	);
 
 	return;
 }

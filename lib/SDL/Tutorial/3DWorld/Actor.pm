@@ -45,7 +45,7 @@ use warnings;
 use SDL::Tutorial::3DWorld::OpenGL   ();
 use SDL::Tutorial::3DWorld::Material ();
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 =head2 new
 
@@ -218,8 +218,6 @@ sub init {
 	if ( $self->{material} ) {
 		$self->{material}->init;
 	}
-
-	
 
 	return 1;
 }

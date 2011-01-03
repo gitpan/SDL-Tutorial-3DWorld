@@ -25,20 +25,32 @@ use SDL::Mouse;
 use SDL::Constants                 ();
 use SDL::Tutorial::3DWorld::Camera ();
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 our @ISA     = 'SDL::Tutorial::3DWorld::Camera';
 
 use constant D2R => CORE::atan2(1,1) / 45;
 
 sub new {
 	my $self = shift->SUPER::new(@_);
+	my $down = $self->{down};
 
 	# Store the original speed for later
 	$self->{speed_original} = $self->{speed};
 
-	# Space makes us lift
-	$self->{down}->{SDL::Constants::SDLK_SPACE} = 0;
-	$self->{down}->{SDL::Constants::SDLK_LCTRL} = 0;
+	# Move camera forwards and backwards
+	$down->{SDL::Constants::SDLK_w} = 0;
+	$down->{SDL::Constants::SDLK_s} = 0;
+
+	# Strafe camera left and right
+	$down->{SDL::Constants::SDLK_a} = 0;
+	$down->{SDL::Constants::SDLK_d} = 0;
+
+	# Lift up and down
+	$down->{SDL::Constants::SDLK_SPACE} = 0;
+	$down->{SDL::Constants::SDLK_LCTRL} = 0;
+
+	# Shift makes us run
+	$down->{SDL::Constants::SDLK_LSHIFT} = 0;
 
 	return $self;
 }
