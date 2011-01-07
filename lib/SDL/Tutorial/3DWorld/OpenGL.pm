@@ -30,11 +30,12 @@ this module will be removed.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use OpenGL ':all';
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 1;
 

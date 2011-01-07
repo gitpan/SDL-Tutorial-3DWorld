@@ -3,13 +3,15 @@ package SDL::Tutorial::3DWorld::Mesh;
 use 5.008;
 use strict;
 use warnings;
+use OpenGL                           ();
+use OpenGL::List                     ();
 use List::MoreUtils                  ();
 use SDL::Tutorial::3DWorld::OpenGL   ();
 use SDL::Tutorial::3DWorld::Material ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
-
+# Detect support for Vertex Buffer 
 
 
 
@@ -19,7 +21,14 @@ our $VERSION = '0.28';
 sub new {
 	my $class = shift;
 	my $self  = bless {
-		material => [ SDL::Tutorial::3DWorld::Material->new ],
+		material => [
+			# We put in a default base material both so
+			# that mesh without any materials won't end
+			# up being rendered manually, and so that file
+			# formats that describe material changes in delta
+			# form have a base to change from.
+			SDL::Tutorial::3DWorld::Material->new,
+		],
 		vertex   => [ undef ],
 		normal   => [ undef ],
 		uv       => [ undef ],
@@ -123,6 +132,7 @@ sub add_all {
 	} elsif ( $v[2] > $box->[5] ) {
 		$box->[5] = $v[2];
 	}
+	return;
 }
 
 sub add_vertex {
@@ -150,6 +160,7 @@ sub add_vertex {
 	} elsif ( $_[2] > $box->[5] ) {
 		$box->[5] = $_[2];
 	}
+	return;
 }
 
 # Add an explicit normal
@@ -232,8 +243,7 @@ sub add_triangle {
 		$N2->[1] += $yn;
 		$N2->[2] += $zn;
 	}
-
-	return 1;
+	return;
 }
 
 sub add_quad {
@@ -314,6 +324,8 @@ sub add_quad {
 		$N3->[1] += $yn;
 		$N3->[2] += $zn;
 	}
+
+	return;
 }
 
 
@@ -356,11 +368,14 @@ sub init {
 		$self->{material}->[$face->[1]]->init;
 	}
 
-	return 1;
+	return $self->{init} = 1;
 }
 
 sub display {
 	my $self = shift;
+
+	# Auto-initialise
+	$self->{init} or $self->init;
 
 	# Set up and apply defaults
 	my $material = $self->{material};
@@ -466,6 +481,51 @@ sub display {
 	OpenGL::glEnd() if $begin;
 
 	return 1;
+}
+
+# Generate a display list for the mesh
+sub as_list {
+	my $self = shift;
+	return OpenGL::List::glpList {
+		$self->display;
+	};
+}
+
+
+
+
+
+######################################################################
+# Vertex Buffer Array Renderer
+
+sub as_oga {
+	my $self   = shift;
+	my $vertex = $self->{vertex};
+	my $face   = $self->{face};
+
+	# Render the faces
+	my @voga = ();
+	foreach my $f ( @$face ) {
+		my $t = $f->[0];
+
+		if ( $t == 4 ) {
+			# Quad
+			push @voga, (
+				@{$vertex->[$f->[2]]},
+				@{$vertex->[$f->[3]]},
+				@{$vertex->[$f->[4]]},
+				@{$vertex->[$f->[5]]},
+			);
+		}
+
+	}
+
+	return {
+		vertex => OpenGL::Array->new_list(
+			OpenGL::GL_FLOAT,
+			@voga,
+		),
+	};
 }
 
 1;

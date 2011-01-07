@@ -1,5 +1,49 @@
 Changes for Perl extension SDL-Tutorial-3DWorld
 
+0.32 to be released
+	- Added a smallish test video
+	- Added the beginnings of an implementation of a flat screen TV
+	  actor. Unfortunately, the underlying SDL implementation of MPEG
+	  support isn't quite working yet, so it is disabled for now.
+	- Nesting file parsers under Asset:: wasn't really working for me
+	  logically, so moved them all to the root level.
+	- Added a test script for the ::Mesh class.
+	- The beginning of OpenGL::Array integration for ::Mesh objects,
+	  as a stepping stone to moving from display lists to more modern
+	  OpenGL Vertex Arrays (before we move all the way to OpenGL
+	  Vertex Buffer Arrays).
+	- Fixed the surface normal scaling gotcha described at this URL.
+	  http://www.opengl.org/resources/features/KilgardTechniques/oglpitfall/
+	- Restored specular material component to the teapots now they will
+	  be displayed correctly.
+
+0.31 Tue 4 Jan 2011
+	- Added a billboard actor for sprites that always orient towards
+	  the camera like particle effects and lens flares etc. Unlike the
+	  plain sprite actor, this one DOES do blurring up close because it
+	  is often used for more serious effects in 3D programs.
+	- Added a billboard demonstration which is completely unlike the
+	  way most real things will be done (this is an actual thing,
+	  instead of some spherically symmetric particle/effect)
+
+0.30 Tue 4 Jan 2011
+	- The Sprite.pm file for the previous release was accidentally
+	  not bundled with the release.
+	- Added a class for generating hedrons of other actor objects,
+	  representing the first time that actors exist in the world
+	  without being part of the main actor array.
+	- Added a 2 level recursive toilet plunger icosahedron to world.
+	- Unitised the sprite display, and correct the scaling of the
+	  demonstration sprite directly when we add it to the world.
+	- Added support for configurable GL_TEXTURE_MAG_FILTER values.
+	- We now disable blurring of sprites by default so that they
+	  intentionally look pixelish and old-school.
+
+0.29 Tue 4 Jan 2011
+	- The debug display now changes correctly when you turn debug on and off,
+	  and does so correctly for new objects in both states as well.
+	- Added support for basic Wolfenstein style sprites.
+
 0.28 Mon 3 Jan 2011
 	- Stripped a few superfluous methods out of the lighting setup.
 	- Make sure the camera direction vector is set up early to prevent

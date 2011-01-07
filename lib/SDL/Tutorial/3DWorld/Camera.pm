@@ -29,6 +29,7 @@ In this initial skeleton code, the camera is fixed and cannot be moved.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use SDL::Mouse                     ();
@@ -36,7 +37,7 @@ use SDL::Constants                 ();
 use SDL::Tutorial::3DWorld::OpenGL ();
 use SDL::Tutorial::3DWorld::Bound; # Import constants
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 use constant {
 	D2R  => CORE::atan2(1,1) / 45,

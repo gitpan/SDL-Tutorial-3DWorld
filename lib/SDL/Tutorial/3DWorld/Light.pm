@@ -35,12 +35,13 @@ controlled. All lights will have a fixed colour, intensity, and diffusion.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use SDL::Tutorial::3DWorld::OpenGL ();
 use OpenGL::List                   ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 =pod
 

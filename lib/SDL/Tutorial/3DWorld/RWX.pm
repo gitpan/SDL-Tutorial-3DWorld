@@ -1,15 +1,15 @@
-package SDL::Tutorial::3DWorld::Asset::RWX;
+package SDL::Tutorial::3DWorld::RWX;
 
 =pod
 
 =head1 NAME
 
-SDL::Tutorial::3DWorld::Asset::RWX - Support for loading 3D models from RWX files
+SDL::Tutorial::3DWorld::RWX - Support for loading 3D models from RWX files
 
 =head1 SYNOPSIS
 
   # Create the object but don't load anything
-  my $model = SDL::Tutorial::3DWorld::Asset::RWX->new(
+  my $model = SDL::Tutorial::3DWorld::RWX->new(
       file => 'mymodel.rwx',
   );
   
@@ -21,7 +21,7 @@ SDL::Tutorial::3DWorld::Asset::RWX - Support for loading 3D models from RWX file
 
 =head1 DESCRIPTION
 
-B<SDL::Tutorial::3DWorld::Asset::RWX> provides a basic implementation of a RWX file
+B<SDL::Tutorial::3DWorld::RWX> provides a basic implementation of a RWX file
 parser.
 
 Given a file name, it will load the file and parse the contents directly
@@ -48,7 +48,7 @@ use SDL::Tutorial::3DWorld::Mesh  ();
 use SDL::Tutorial::3DWorld::Asset ();
 use SDL::Tutorial::3DWorld::Model ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 our @ISA     = 'SDL::Tutorial::3DWorld::Model';
 
 

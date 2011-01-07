@@ -31,13 +31,14 @@ be optional, allowing you to display and hide the console on the fly.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use Time::HiRes                    ();
 use SDL::Tutorial::3DWorld         ();
 use SDL::Tutorial::3DWorld::OpenGL ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 # Turn OpenGL fake "constants" into real compile-time optimised constants
 use constant {

@@ -18,6 +18,7 @@ camera than apply to a plain or walking camera.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use OpenGL;
@@ -25,7 +26,7 @@ use SDL::Mouse;
 use SDL::Constants                 ();
 use SDL::Tutorial::3DWorld::Camera ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 our @ISA     = 'SDL::Tutorial::3DWorld::Camera';
 
 use constant D2R => CORE::atan2(1,1) / 45;

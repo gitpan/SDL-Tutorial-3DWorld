@@ -21,6 +21,7 @@ on the positive axis side (in all three dimension) of the actor position.
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use SDL::Tutorial::3DWorld::OpenGL ();
@@ -30,7 +31,7 @@ use OpenGL::List ();
 # Use proper POSIX math rather than playing games with Perl's int()
 use POSIX ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {

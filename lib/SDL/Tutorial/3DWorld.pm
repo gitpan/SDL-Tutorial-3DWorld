@@ -59,17 +59,22 @@ use SDL                                      2.524 ':all';
 use SDL::Event                                     ':all';
 use SDLx::App                                      ();
 use SDL::Tutorial::3DWorld::Actor                  ();
+use SDL::Tutorial::3DWorld::Actor::Billboard       ();
 use SDL::Tutorial::3DWorld::Actor::Debug           ();
-use SDL::Tutorial::3DWorld::Actor::Model           ();
-use SDL::Tutorial::3DWorld::Actor::Teapot          ();
 use SDL::Tutorial::3DWorld::Actor::GridCube        ();
 use SDL::Tutorial::3DWorld::Actor::GridSelect      ();
-use SDL::Tutorial::3DWorld::Actor::TextureCube     ();
+use SDL::Tutorial::3DWorld::Actor::Hedron          ();
 use SDL::Tutorial::3DWorld::Actor::MaterialSampler ();
+use SDL::Tutorial::3DWorld::Actor::Model           ();
+use SDL::Tutorial::3DWorld::Actor::Sprite          ();
+use SDL::Tutorial::3DWorld::Actor::Teapot          ();
+use SDL::Tutorial::3DWorld::Actor::TextureCube     ();
+use SDL::Tutorial::3DWorld::Actor::TV              ();
 use SDL::Tutorial::3DWorld::Asset                  ();
 use SDL::Tutorial::3DWorld::Camera                 ();
 use SDL::Tutorial::3DWorld::Camera::God            ();
 use SDL::Tutorial::3DWorld::Console                ();
+use SDL::Tutorial::3DWorld::Fog                    ();
 use SDL::Tutorial::3DWorld::Landscape              ();
 use SDL::Tutorial::3DWorld::Landscape::Infinite    ();
 use SDL::Tutorial::3DWorld::Light                  ();
@@ -85,10 +90,10 @@ BEGIN {
 	OpenGL::glutInit();
 }
 
+our $VERSION = '0.32';
+
 # The currently active world
 our $CURRENT = undef;
-
-our $VERSION = '0.28';
 
 =pod
 
@@ -151,6 +156,15 @@ sub new {
 		),
 	];
 
+	# Create the (optional) fog.
+	# Because it doesn't really blend with the current skybox,
+	# I've tweaked it to try to look like a light ground haze.
+	# $self->{fog} = SDL::Tutorial::3DWorld::Fog->new(
+		# color => [ 0.5, 0.5, 0.5, 0 ],
+		# start => 10.0,
+		# end   => 50.0,
+	# );
+
 	# Create the landscape
 	$self->{landscape} = SDL::Tutorial::3DWorld::Landscape::Infinite->new(
 		texture => $self->sharefile('ground.jpg'),
@@ -181,46 +195,60 @@ sub new {
 	$self->{selector} = SDL::Tutorial::3DWorld::Actor::GridSelect->new;
 	$self->actor( $self->{selector} );
 
+	# Add a video screen
+	# $self->actor(
+	 	# SDL::Tutorial::3DWorld::Actor::TV->new(
+			# position => [ 0, 1, -5 ],
+			# file     => $self->sharefile('test-mpeg.mpg'),
+	 	# ),
+	# );
+
 	# Add three teapots to the scene.
 	# (R)ed is the official colour of the X axis.
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Teapot->new(
+			hidden   => $self->{hide_expensive},
 			size     => 0.20,
 			position => [ 0.0, 0.5, 0.0 ],
 			velocity => $self->dvector( 0.1, 0.0, 0.0 ),
 			material => {
-				ambient  => [ 0.5, 0.2, 0.2, 1.0 ],
-				diffuse  => [ 1.0, 0.7, 0.7, 1.0 ],
+				ambient   => [ 0.5, 0.2, 0.2, 1.0 ],
+				diffuse   => [ 1.0, 0.7, 0.7, 1.0 ],
+				specular  => [ 1.0, 1.0, 1.0, 1.0 ],
+				shininess => 80,
 			},
-			hidden   => $self->{hide_expensive},
 		),
 	);
 
 	# (B)lue is the official colour of the Z axis.
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Teapot->new(
+			hidden   => $self->{hide_expensive},
 			size     => 0.30,
 			position => [ 0.0, 1.0, 0.0 ],
 			velocity => $self->dvector( 0.0, 0.0, 0.1 ),
 			material => {
-				ambient  => [ 0.2, 0.2, 0.5, 1.0 ],
-				diffuse  => [ 0.7, 0.7, 1.0, 1.0 ],
+				ambient   => [ 0.2, 0.2, 0.5, 1.0 ],
+				diffuse   => [ 0.7, 0.7, 1.0, 1.0 ],
+				specular  => [ 1.0, 1.0, 1.0, 1.0 ],
+				shininess => 100,
 			},
-			hidden   => $self->{hide_expensive},
 		),
 	);
 
 	# (G)reen is the official colour of the Y axis
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Teapot->new(
+			hidden   => $self->{hide_expensive},
 			size     => 0.50,
 			position => [ 0.0, 1.5, 0.0 ],
 			velocity => $self->dvector( 0.0, 0.1, 0.0 ),
 			material => {
-				ambient  => [ 0.2, 0.5, 0.2, 1 ],
-				diffuse  => [ 0.7, 1.0, 0.7, 1 ],
+				ambient   => [ 0.2, 0.5, 0.2, 1.0 ],
+				diffuse   => [ 0.7, 1.0, 0.7, 1.0 ],
+				specular  => [ 1.0, 1.0, 1.0, 1.0 ],
+				shininess => 120,
 			},
-			hidden   => $self->{hide_expensive},
 		),
 	);
 
@@ -259,7 +287,18 @@ sub new {
 		),
 	);
 
-	# Place a lollipop near the origin
+	# Place a high-detail table (to test large models and scaling)
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Model->new(
+			position => [  -10,    0,    0 ],
+			scale    => [ 0.05, 0.05, 0.05 ],
+			velocity => [    0,    0,    0 ],
+			file     => File::Spec->catfile('model', 'table', 'table.obj'),
+			plain    => 1,
+		),
+	);
+
+	# Place a lollipop near the origin to test transparency in models
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Model->new(
 			position => [ -2, 0, 0 ],
@@ -281,25 +320,33 @@ sub new {
 		),
 	);
 
-	# Place a large table (somewhere...)
-	$self->actor(
-		SDL::Tutorial::3DWorld::Actor::Model->new(
-			position => [ -10, 0, 0 ],
-			scale    => [ 0.05, 0.05, 0.05 ],
-			file     => File::Spec->catfile('model', 'table', 'table.obj'),
-			plain    => 1,
-		),
-	);
-
 	# Add a material sampler
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::MaterialSampler->new(
+			hidden   => $self->{hide_expensive},
 			position => [ 5, 1, 5 ],
 			file     => File::Spec->catfile(
 				File::ShareDir::dist_dir('SDL-Tutorial-3DWorld'),
 				'example.mtl',
 			),
-			hidden   => $self->{hide_expensive},
+		),
+	);
+
+	# Add a sprite
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Sprite->new(
+			scale    => [ 2, 2, 2  ],
+			position => [ 3, 0, -1 ],
+			texture  => $self->sharefile('sprite', 'pguard_die4.png'),
+		),
+	);
+
+	# Add a billboard
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Billboard->new(
+			scale    => [ 2, 2, 2 ],
+			position => [ 3, 3, 10 ],
+			texture  => $self->sharefile('sprite', 'billboard.png'),
 		),
 	);
 
@@ -331,6 +378,27 @@ sub new {
 			);
 		}
 	}
+
+	# An recursive icosaheron of toilet plungers in the sky
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Hedron->icosahedron(
+			position => [ -7, 5, 7 ],
+			velocity => [ 0, 0, 0  ],
+			orient   => [ 0, 0, 1, 0 ],
+			rotate   => 1,
+			actor    => SDL::Tutorial::3DWorld::Actor::Hedron->icosahedron(
+				position => [ 0, 0.95, 0 ],
+				actor    => SDL::Tutorial::3DWorld::Actor::Model->new(
+					position => [ 0, 0.19, 0 ],
+					file     => File::Spec->catfile(
+						'model',
+						'toilet-plunger001',
+						'toilet_plunger001.obj',
+					),
+				),
+			),
+		),
+	);
 
 	return $self;
 }
@@ -387,10 +455,11 @@ sub actor {
 	# Add said bounding box
 	my $debug = SDL::Tutorial::3DWorld::Actor::Debug->new(
 		parent => $actor,
+		hidden => $self->{hide_debug},
 	);
 	push @{$self->{actors}}, $debug;
 	push @{$self->{move}},   $debug;
-	push @{$self->{show}},   $debug;
+	push @{$self->{show}},   $debug unless $self->{hide_debug};
 
 	# Initialise it too if needed
 	$debug->init if $param{init};
@@ -510,7 +579,7 @@ sub init {
 	# Use the prettiest shading available to us
 	glShadeModel( GL_SMOOTH );
 
-	# Enable the Z buffer (DEPTH BUFFER) so that OpenGL will do all the
+	# Enable the Z buffer ( DEPTH BUFFER ) so that OpenGL will do all the
 	# correct shape culling for us and we don't have to care about it.
 	glDepthFunc( GL_LESS );
 	glEnable( GL_DEPTH_TEST );
@@ -576,6 +645,12 @@ sub init {
 	# Initialise the console
 	if ( $self->{console} ) {
 		$self->{console}->init;
+	}
+
+	# Initialise and enable the fog (in this case a light ground haze)
+	if ( $self->{fog} ) {
+		$self->{fog}->init;
+		$self->{fog}->enable;
 	}
 
 	return 1;
@@ -828,6 +903,10 @@ sub display_actors {
 				glPopMatrix();
 			};
 	}
+
+	# Disable normalisation in case the last object left us
+	# with normalisation enabled.
+	OpenGL::glDisable( OpenGL::GL_NORMALIZE );
 
 	return 1;
 }

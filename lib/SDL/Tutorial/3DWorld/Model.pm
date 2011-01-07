@@ -30,12 +30,12 @@ use 5.008;
 use strict;
 use warnings;
 use IO::File                       ();
-use Params::Util                   '_INSTANCE';
+use Params::Util                   ();
 use OpenGL::List                   ();
 use SDL::Tutorial::3DWorld::Asset  ();
 use SDL::Tutorial::3DWorld::OpenGL ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 # Global Model Cache.
 # Since there are currently no optional model settings and model
@@ -72,7 +72,7 @@ sub new {
 			directory => $directory,
 		);
 	}
-	unless ( _INSTANCE($self->asset, 'SDL::Tutorial::3DWorld::Asset') ) {
+	unless ( Params::Util::_INSTANCE($self->asset, 'SDL::Tutorial::3DWorld::Asset') ) {
 		die "Missing or invalid asset";
 	}
 
@@ -116,7 +116,7 @@ sub parse {
 }
 
 sub display {
-	 OpenGL::glCallList( $_[0]->{list} );
+	OpenGL::glCallList( $_[0]->{list} );
 }
 
 1;

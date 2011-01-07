@@ -19,10 +19,10 @@ use warnings;
 use OpenGL::List                       ();
 use SDL::Tutorial::3DWorld::OpenGL     ();
 use SDL::Tutorial::3DWorld::Actor      ();
-use SDL::Tutorial::3DWorld::Asset::MTL ();
+use SDL::Tutorial::3DWorld::MTL ();
 use SDL::Tutorial::3DWorld::Bound      ();
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -35,6 +35,14 @@ sub new {
 
 	# Material samples might contain transparent materials that need blending
 	$self->{blending} = 1;
+
+	# Scaling and rotation are not supported
+	if ( $self->{scale} ) {
+		die "MaterialSampler actors do not support scaling";
+	}
+	if ( $self->{orient} ) {
+		die "MaterialSampler actors do not support rotation";
+	}
 
 	return $self;
 }
@@ -54,7 +62,7 @@ sub init {
 	my $self = shift;
 
 	# Load the material file
-	$self->{mtl} = SDL::Tutorial::3DWorld::Asset::MTL->new(
+	$self->{mtl} = SDL::Tutorial::3DWorld::MTL->new(
 		file => $self->{file},
 	) or die "Failed to load MTL file";
 

@@ -34,6 +34,7 @@ the movement of the camera (making them appear to be a long way away).
 
 =cut
 
+use 5.008;
 use strict;
 use warnings;
 use File::Spec                      ();
@@ -44,7 +45,7 @@ use SDL::Tutorial::3DWorld::OpenGL  ();
 use OpenGL::List                    ();
 use OpenGL;
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 =pod
 
