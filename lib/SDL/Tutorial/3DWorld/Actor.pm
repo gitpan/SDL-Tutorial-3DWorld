@@ -46,7 +46,7 @@ use warnings;
 use SDL::Tutorial::3DWorld::OpenGL   ();
 use SDL::Tutorial::3DWorld::Material ();
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 =head2 new
 
@@ -83,6 +83,15 @@ sub new {
 		# Override defaults
 		@_,
 	}, $class;
+
+	# Automatically support uniform scaling
+	if ( $self->{scale} and not ref $self->{scale} ) {
+		$self->{scale} = [
+			$self->{scale},
+			$self->{scale},
+			$self->{scale},
+		];
+	}
 
 	# Upgrade material parameters to material object
 	if ( ref $self->{material} eq 'HASH' ) {
@@ -229,7 +238,7 @@ sub init {
 sub display {
 	my $self = shift;
 
-	# Translate to the position of the actor
+	# Translate, scale and rotate to the position of the actor
 	OpenGL::glTranslatef( @{$self->{position}} );
 
 	# Scale if needed.
@@ -255,7 +264,7 @@ sub move {
 	$self->{position}->[2] += $self->{velocity}->[2] * $step;
 
 	# Rotate if we need to
-	if ( $self->{orient} ) {
+	if ( $self->{orient} and $self->{rotate} ) {
 		$self->{orient}->[0] += $self->{rotate} * $step;
 	}
 

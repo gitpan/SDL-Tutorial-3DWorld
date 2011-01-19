@@ -9,7 +9,7 @@ use SDL::Tutorial::3DWorld::Texture  ();
 use SDL::Tutorial::3DWorld::Material ();
 use SDL::Tutorial::3DWorld::Actor    ();
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 
@@ -20,11 +20,10 @@ our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 # Constructor and Accessors
 
 sub new {
-	my $class = shift;
-	my $self  = bless {
+	my $self = shift->SUPER::new(
 		blending => 1,
 		@_,
-	}, $class;
+	);
 
 	# Convert the texture to a full material
 	$self->{material} = SDL::Tutorial::3DWorld::Material->new(

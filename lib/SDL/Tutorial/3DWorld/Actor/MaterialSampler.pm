@@ -22,7 +22,7 @@ use SDL::Tutorial::3DWorld::Actor      ();
 use SDL::Tutorial::3DWorld::MTL ();
 use SDL::Tutorial::3DWorld::Bound      ();
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 our @ISA     = 'SDL::Tutorial::3DWorld::Actor';
 
 sub new {
@@ -34,7 +34,7 @@ sub new {
 	}
 
 	# Material samples might contain transparent materials that need blending
-	$self->{blending} = 1;
+	# $self->{blending} = 1;
 
 	# Scaling and rotation are not supported
 	if ( $self->{scale} ) {

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use SDL::Tutorial::3DWorld::OpenGL ();
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 # Convert GL fake "constants" to real constants.
 # If we don't do this we spend a third of our CPU calling constants.
@@ -251,12 +251,13 @@ sub display {
 
 	# Apply the material properties
 	OpenGL::glEnable( GL_LIGHTING );
-	OpenGL::glColor3f( @{$self->{color}} );
 	if ( $self->{texture} ) {
-		$self->{texture}->display;
 		OpenGL::glEnable( GL_TEXTURE_2D );
+		OpenGL::glColor3f( @{$self->{color}} );
+		$self->{texture}->display;
 	} else {
 		OpenGL::glDisable( GL_TEXTURE_2D );
+		OpenGL::glColor3f( 0, 0, 0 );
 	}
 	OpenGL::glMaterialfv_p(
 		GL_FRONT,
@@ -283,12 +284,12 @@ sub display {
 		OpenGL::glMaterialfv_p(
 			GL_FRONT,
 			GL_SPECULAR,
-			0, 0, 0, 0,
+			0, 0, 0, 1,
 		);
 		OpenGL::glMaterialf(
 			GL_FRONT,
 			GL_SHININESS,
-			127,
+			100.23,
 		);
 	}
 

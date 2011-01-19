@@ -31,10 +31,10 @@ requires:
   OpenGL: 0.64
   OpenGL::List: 0.01
   Params::Util: 1.00
-  SDL: 2.524
+  SDL: 2.527
   perl: 5.8.5
 resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/SDL-Tutorial-3DWorld
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/SDL-Tutorial-3DWorld
-version: 0.32
+version: 0.33

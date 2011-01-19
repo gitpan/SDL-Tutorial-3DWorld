@@ -55,21 +55,24 @@ use List::MoreUtils                           0.22 ();
 use Params::Util                              1.00 ();
 use OpenGL                                    0.64 ':all';
 use OpenGL::List                              0.01 ();
-use SDL                                      2.524 ':all';
+use SDL                                      2.527 ':all';
 use SDL::Event                                     ':all';
 use SDLx::App                                      ();
 use SDL::Tutorial::3DWorld::Actor                  ();
 use SDL::Tutorial::3DWorld::Actor::Billboard       ();
 use SDL::Tutorial::3DWorld::Actor::Debug           ();
 use SDL::Tutorial::3DWorld::Actor::GridCube        ();
+use SDL::Tutorial::3DWorld::Actor::GridPlane       ();
 use SDL::Tutorial::3DWorld::Actor::GridSelect      ();
 use SDL::Tutorial::3DWorld::Actor::Hedron          ();
 use SDL::Tutorial::3DWorld::Actor::MaterialSampler ();
 use SDL::Tutorial::3DWorld::Actor::Model           ();
 use SDL::Tutorial::3DWorld::Actor::Sprite          ();
+use SDL::Tutorial::3DWorld::Actor::SpriteOct       ();
 use SDL::Tutorial::3DWorld::Actor::Teapot          ();
 use SDL::Tutorial::3DWorld::Actor::TextureCube     ();
-use SDL::Tutorial::3DWorld::Actor::TV              ();
+use SDL::Tutorial::3DWorld::Actor::TronBit         ();
+# use SDL::Tutorial::3DWorld::Actor::TV              ();
 use SDL::Tutorial::3DWorld::Asset                  ();
 use SDL::Tutorial::3DWorld::Camera                 ();
 use SDL::Tutorial::3DWorld::Camera::God            ();
@@ -90,7 +93,7 @@ BEGIN {
 	OpenGL::glutInit();
 }
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 # The currently active world
 our $CURRENT = undef;
@@ -192,16 +195,56 @@ sub new {
 
 	# The selector is an actor and a special camera tool for
 	#(potentially) controlling something in the world.
-	$self->{selector} = SDL::Tutorial::3DWorld::Actor::GridSelect->new;
-	$self->actor( $self->{selector} );
+	$self->{selector} = $self->actor(
+		SDL::Tutorial::3DWorld::Actor::GridSelect->new,
+	);
 
 	# Add a video screen
 	# $self->actor(
-	 	# SDL::Tutorial::3DWorld::Actor::TV->new(
+		# SDL::Tutorial::3DWorld::Actor::TV->new(
 			# position => [ 0, 1, -5 ],
 			# file     => $self->sharefile('test-mpeg.mpg'),
-	 	# ),
+		# ),
 	# );
+
+	# Create the wolfenstein-inspired level
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::GridPlane->new(
+			# The GridPlane automatically culls faces that will
+			# never be exposed to reduce costs. Turn on this
+			# debug flag to always render all faces.
+			# debug    => 1,
+			position => [ 10, 0, 10 ],
+			scale    => 3,
+			size     => 9,
+			floor    => [ 0.5, 0.5, 0.5 ],
+			ceiling  => [ 0.2, 0.2, 0.2 ],
+			wall     => [
+				$self->sharefile('wall1.png'),
+				$self->sharefile('wall2.png'),
+				$self->sharefile('wall3.png'),
+				$self->sharefile('wall4.png'),
+			],
+			map      => <<'END_MAP'
+112121211
+100000003
+100000303
+100000303
+000000303
+100330303
+100330303
+100000303
+112121333
+END_MAP
+		),
+	);
+
+	# A full and complex character
+	$self->{bit} = $self->actor(
+		SDL::Tutorial::3DWorld::Actor::TronBit->new(
+			position => [ 1.0, 1.9, 7.0 ],
+		),
+	);
 
 	# Add three teapots to the scene.
 	# (R)ed is the official colour of the X axis.
@@ -290,9 +333,9 @@ sub new {
 	# Place a high-detail table (to test large models and scaling)
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Model->new(
-			position => [  -10,    0,    0 ],
-			scale    => [ 0.05, 0.05, 0.05 ],
-			velocity => [    0,    0,    0 ],
+			scale    => 0.05,
+			position => [ -10, 0, 0 ],
+			velocity => [   0, 0, 0 ],
 			file     => File::Spec->catfile('model', 'table', 'table.obj'),
 			plain    => 1,
 		),
@@ -335,16 +378,34 @@ sub new {
 	# Add a sprite
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Sprite->new(
-			scale    => [ 2, 2, 2  ],
+			scale    => 2,
 			position => [ 3, 0, -1 ],
 			texture  => $self->sharefile('sprite', 'pguard_die4.png'),
+		),
+	);
+
+	# Add an eight-sided sprite
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::SpriteOct->new(
+			scale    => 2,
+			position => [ 5, 0, -1 ],
+			texture  => [
+				$self->sharefile('sprite', 'mguard_s_1.png'),
+				$self->sharefile('sprite', 'mguard_s_2.png'),
+				$self->sharefile('sprite', 'mguard_s_3.png'),
+				$self->sharefile('sprite', 'mguard_s_4.png'),
+				$self->sharefile('sprite', 'mguard_s_5.png'),
+				$self->sharefile('sprite', 'mguard_s_6.png'),
+				$self->sharefile('sprite', 'mguard_s_7.png'),
+				$self->sharefile('sprite', 'mguard_s_8.png'),
+			],
 		),
 	);
 
 	# Add a billboard
 	$self->actor(
 		SDL::Tutorial::3DWorld::Actor::Billboard->new(
-			scale    => [ 2, 2, 2 ],
+			scale    => 2,
 			position => [ 3, 3, 10 ],
 			texture  => $self->sharefile('sprite', 'billboard.png'),
 		),
@@ -396,6 +457,65 @@ sub new {
 						'toilet_plunger001.obj',
 					),
 				),
+			),
+		),
+	);
+
+	# Add three tron light cycles of varying complexity
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Model->new(
+			position => [ 15, 1, -5 ],
+			velocity => [ 0, 0, 0 ],
+			orient   => [ 270, 1, 0, 0 ],
+			scale    => 0.5,
+			file     => File::Spec->catfile(
+				'model',
+				'gltron',
+				'lightcycle-high.obj',
+			),
+		),
+	);
+
+	# Add three tron light cycles of varying complexity
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Model->new(
+			position => [ 10, 1, -5 ],
+			velocity => [ 0, 0, 0 ],
+			orient   => [ 270, 1, 0, 0 ],
+			scale    => 0.5,
+			file     => File::Spec->catfile(
+				'model',
+				'gltron',
+				'lightcycle-med.obj',
+			),
+		),
+	);
+
+	# Add three tron light cycles of varying complexity
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::Model->new(
+			position => [ 5, 1, -5 ],
+			velocity => [ 0, 0, 0 ],
+			orient   => [ 270, 1, 0, 0 ],
+			scale    => 0.5,
+			file     => File::Spec->catfile(
+				'model',
+				'gltron',
+				'lightcycle-low.obj',
+			),
+		),
+	);
+
+	# Add a material sampler for the light cycle
+	$self->actor(
+		SDL::Tutorial::3DWorld::Actor::MaterialSampler->new(
+			hidden   => $self->{hide_expensive},
+			position => [ 5, 1, -10 ],
+			file     => File::Spec->catfile(
+				File::ShareDir::dist_dir('SDL-Tutorial-3DWorld'),
+				'model',
+				'gltron',
+				'lightcycle.mtl',
 			),
 		),
 	);
@@ -464,7 +584,8 @@ sub actor {
 	# Initialise it too if needed
 	$debug->init if $param{init};
 
-	return 1;
+	# Returns the actor as a convenience
+	return $actor;
 }
 
 
@@ -712,6 +833,16 @@ sub event {
 		# Toggle visibility of the console (i.e. the FPS display)
 		if ( $key == SDLK_F3 ) {
 			$self->{hide_console} = $self->{hide_console} ? 0 : 1;
+			return 1;
+		}
+
+		# Trigger bit's "Yes" or "No" cycle
+		if ( $key == SDLK_y ) {
+			$self->{bit}->yes;
+			return 1;
+		}
+		if ( $key == SDLK_n ) {
+			$self->{bit}->no;
 			return 1;
 		}
 
